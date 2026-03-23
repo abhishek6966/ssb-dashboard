@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSB Operations Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#A32638;--red-dim:rgba(163,38,56,.10);
+  --gold:#C89A3A;--gold-dim:rgba(200,154,58,.12);
+  --green:#16A34A;--green-dim:rgba(22,163,74,.10);
+  --blue:#2563EB;--blue-dim:rgba(37,99,235,.10);
+  --navy:#1A2340;
+  --ink:#1C1C1E;--muted:#6B7280;
+  --border:rgba(0,0,0,.08);--border2:#E5E7EB;
+  --surface:#fff;--bg:#F4F5F7;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+
+/* ── WIZARD ─────────────────────────────────────────── */
+#wizard{max-width:700px;margin:40px auto;padding:0 20px 60px}
+.wiz-header{text-align:center;margin-bottom:32px}
+.wiz-logo{width:48px;height:48px;background:var(--red);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
+.wiz-logo span{color:#fff;font-weight:700;font-size:16px}
+.wiz-title{font-size:22px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.wiz-sub{font-size:13px;color:var(--muted)}
+
+.step-pills{display:flex;justify-content:center;gap:0;margin-bottom:32px}
+.step-pill{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);padding:0 10px}
+.step-pill .num{width:22px;height:22px;border-radius:50%;background:var(--border2);color:var(--muted);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.step-pill.active .num{background:var(--red);color:#fff}
+.step-pill.done .num{background:var(--green);color:#fff}
+.step-pill.active{color:var(--ink);font-weight:500}
+.step-sep{width:32px;height:1px;background:var(--border2);align-self:center}
+
+.wiz-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:28px 32px;margin-bottom:16px}
+.wiz-card h2{font-size:16px;font-weight:600;margin-bottom:6px;color:var(--navy)}
+.wiz-card p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+
+.input-wrap{position:relative;margin-bottom:12px}
+.input-wrap input,.input-wrap select{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;
+  background:var(--surface);transition:border-color .15s;
+}
+.input-wrap input:focus,.input-wrap select:focus{border-color:var(--red)}
+.input-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;border:none;border-radius:10px;padding:10px 20px;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:var(--red);color:#fff}
+.btn-primary:hover{opacity:.88}
+.btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border2)}
+.btn-secondary:hover{background:var(--border2)}
+.btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+
+/* Sheet preview */
+.sheet-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.sheet-tab-btn{font-size:12px;padding:5px 12px;border-radius:20px;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .15s}
+.sheet-tab-btn.active{background:var(--red-dim);border-color:var(--red);color:var(--red);font-weight:500}
+
+.preview-table-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border2);margin-bottom:14px;max-height:200px;overflow-y:auto}
+.preview-table{width:100%;border-collapse:collapse;font-size:11px}
+.preview-table th{background:var(--navy);color:#fff;padding:7px 10px;text-align:left;font-weight:500;white-space:nowrap;position:sticky;top:0}
+.preview-table td{padding:6px 10px;border-bottom:1px solid var(--border2);color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap}
+.preview-table tr:nth-child(even) td{background:var(--bg)}
+
+/* Mapper */
+.map-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.map-field{font-size:12px;font-weight:500;color:var(--ink);background:var(--red-dim);border-radius:8px;padding:8px 12px}
+.map-arrow{color:var(--muted);font-size:16px;text-align:center}
+.map-select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--border2);border-radius:8px;padding:7px 10px;background:var(--surface);color:var(--ink);outline:none;width:100%}
+.map-select:focus{border-color:var(--red)}
+.map-section-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border2)}
+
+.info-box{background:var(--blue-dim);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6}
+.info-box b{color:var(--ink)}
+
+/* spinner */
+.spinner{width:24px;height:24px;border:3px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* success */
+.success-check{width:56px;height:56px;border-radius:50%;background:var(--green-dim);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px}
+
+/* ── DASHBOARD ───────────────────────────────────────── */
+#dashboard{display:none;max-width:1100px;margin:0 auto;padding:24px 20px 48px}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.top-left{display:flex;align-items:center;gap:14px}
+.logo-mark{width:40px;height:40px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark span{color:#fff;font-weight:700;font-size:15px}
+.dash-title{font-size:17px;font-weight:600;line-height:1.2}
+.dash-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.top-right{display:flex;align-items:center;gap:8px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block;margin-right:4px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.live-label{font-size:12px;color:var(--muted)}
+.reconfigure-btn{font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--border2);border-radius:8px;padding:5px 11px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.reconfigure-btn:hover{background:var(--bg)}
+.export-btn{font-family:'DM Sans',sans-serif;font-size:13px;background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:500}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface);border-radius:14px;padding:18px 20px;border:1px solid var(--border);position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s}
+.kpi:hover{box-shadow:0 6px 24px rgba(0,0,0,.09);transform:translateY(-1px)}
+.kpi-accent{position:absolute;top:0;left:0;width:4px;height:100%;border-radius:14px 0 0 14px}
+.kpi-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.kpi-value{font-size:28px;font-weight:600;line-height:1;font-family:'DM Mono',monospace}
+.kpi-note{font-size:11px;color:var(--muted);margin-top:6px}
+
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px}
+.card{background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:20px 22px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.card-title{font-size:13px;font-weight:600}
+.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.table-wrap{overflow-x:auto;margin-top:4px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:var(--bg);padding:8px 10px;text-align:left;font-weight:500;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border2)}
+.data-table td{padding:9px 10px;border-bottom:1px solid var(--border2);color:var(--ink)}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--bg)}
+
+.no-data{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+
+@media(max-width:700px){
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .charts-row,.bottom-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     WIZARD
+═══════════════════════════════════════════════════════ -->
+<div id="wizard">
+  <div class="wiz-header">
+    <div class="wiz-logo"><span>SSB</span></div>
+    <div class="wiz-title">Dashboard Setup</div>
+    <div class="wiz-sub">Connect your existing Google Sheet — no reformatting needed</div>
+  </div>
+
+  <!-- Step pills -->
+  <div class="step-pills">
+    <div class="step-pill active" id="pill-1"><div class="num">1</div> Connect</div>
+    <div class="step-sep"></div>
+    <div class="step-pill" id="pill-2"><div class="num">2</div> Preview</div>
+    <div class="step-sep"></div>
+    <div class="step-pill" id="pill-3"><div class="num">3</div> Map columns</div>
+    <div class="step-sep"></div>
+    <div class="step-pill" id="pill-4"><div class="num">4</div> Done</div>
+  </div>
+
+  <!-- Step 1: Connect -->
+  <div id="step-1" class="wiz-card">
+    <h2>Connect your Google Sheet</h2>
+    <p>Paste your Google Sheet ID below. Your sheet can have any tab names and any column structure — you'll map them in the next step.<br><br>
+    <b>How to find your Sheet ID:</b> Open your sheet → look at the URL →
+    <code style="font-family:monospace;font-size:11px;background:#F3F4F6;padding:1px 5px;border-radius:3px">docs.google.com/spreadsheets/d/<b style="color:var(--red)">THIS_PART</b>/edit</code></p>
+
+    <div class="info-box">Make sure your sheet is published: <b>File → Share → Publish to web → CSV → Publish.</b> This lets the dashboard read it. Only you can still edit it.</div>
+
+    <div class="input-label">Google Sheet ID</div>
+    <div class="input-wrap">
+      <input id="sheet-id" placeholder="e.g. 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" />
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="loadDemo()">Use demo data instead</button>
+      <button class="btn btn-primary" onclick="doConnect()">
+        <span id="connect-label">Connect & preview →</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Preview tabs -->
+  <div id="step-2" class="wiz-card" style="display:none">
+    <h2>Your sheet — select a tab to preview</h2>
+    <p>These are the tabs we found in your sheet. Click each one to see your data, then choose which tab contains each type of information on the next step.</p>
+    <div class="sheet-tabs" id="tab-btns"></div>
+    <div class="preview-table-wrap">
+      <table class="preview-table" id="preview-tbl"></table>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Map my columns →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Map columns -->
+  <div id="step-3" class="wiz-card" style="display:none">
+    <h2>Map your columns to the dashboard</h2>
+    <p>Tell us where each piece of data lives in your sheet. Pick the tab and column for each field. Leave it as "— skip —" if you don't have that data.</p>
+
+    <!-- Enrollment KPIs -->
+    <div class="map-section-title">Enrollment numbers (KPI cards)</div>
+    <div id="map-enrollment"></div>
+
+    <!-- Events -->
+    <div class="map-section-title">Events / Webinars</div>
+    <div id="map-events"></div>
+
+    <!-- Applications -->
+    <div class="map-section-title">Applications (optional)</div>
+    <div id="map-apps"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="applyMapping()">Build my dashboard →</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Done -->
+  <div id="step-4" class="wiz-card" style="display:none;text-align:center">
+    <div class="success-check">✓</div>
+    <h2 style="text-align:center;margin-bottom:8px">You're all set!</h2>
+    <p style="text-align:center;margin-bottom:20px">Your dashboard is reading live data from your Google Sheet.<br>It auto-refreshes every 5 minutes — just keep your sheet updated as usual.</p>
+    <button class="btn btn-primary" style="margin:0 auto;display:block" onclick="showDashboard()">Open dashboard →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════════════════════ -->
+<div id="dashboard">
+  <div class="top-bar">
+    <div class="top-left">
+      <div class="logo-mark"><span>SSB</span></div>
+      <div>
+        <div class="dash-title">School of Business — Operations Dashboard</div>
+        <div class="dash-sub">Stevens Institute of Technology · Graduate Programs</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <span class="live-dot"></span><span class="live-label" id="live-label">Live</span>
+      <button class="reconfigure-btn" onclick="resetWizard()">⚙ Reconfigure</button>
+      <button class="export-btn" onclick="window.print()">↓ Export PDF</button>
+    </div>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" id="chart1-title">Data Overview</div>
+      </div>
+      <canvas id="mainChart" style="max-height:210px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" id="chart2-title">Breakdown</div>
+      </div>
+      <canvas id="donutChart" style="max-height:200px"></canvas>
+    </div>
+  </div>
+
+  <!-- Bottom: raw data tables -->
+  <div class="bottom-row">
+    <div class="card">
+      <div class="card-header"><div class="card-title" id="tbl1-title">Records</div></div>
+      <div class="table-wrap" id="tbl1-wrap"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" id="tbl2-title">Additional Data</div></div>
+      <div class="table-wrap" id="tbl2-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ───────────────────────────────────────────────
+let sheetId = '';
+let sheetTabs = {};     // { tabName: [{col: val}, ...] }
+let tabNames = [];
+let mapping = {};       // user-defined field → { tab, col }
+let mainChart = null;
+let donutChart = null;
+
+// ── Fields to map ────────────────────────────────────────
+const ENROLLMENT_FIELDS = [
+  { key:'term',       label:'Term / Semester name',  required:true  },
+  { key:'total',      label:'Total enrollment count', required:true  },
+  { key:'program',    label:'Program / Degree name',  required:false },
+  { key:'retention',  label:'Retention rate (%)',     required:false },
+];
+const EVENT_FIELDS = [
+  { key:'ev_name',   label:'Event name',       required:true  },
+  { key:'ev_date',   label:'Event date',        required:false },
+  { key:'ev_att',    label:'Attendance count',  required:false },
+  { key:'ev_status', label:'Status (upcoming/done)', required:false },
+];
+const APP_FIELDS = [
+  { key:'app_term',  label:'Term name',         required:false },
+  { key:'app_count', label:'Applications count',required:false },
+  { key:'app_stage', label:'Stage (if funnel)', required:false },
+];
+
+// ── Step navigation ───────────────────────────────────────
+function goStep(n) {
+  [1,2,3,4].forEach(i => {
+    document.getElementById(`step-${i}`).style.display = i===n ? '' : 'none';
+    const pill = document.getElementById(`pill-${i}`);
+    pill.className = 'step-pill' + (i===n ? ' active' : i<n ? ' done' : '');
+  });
+}
+
+// ── Step 1: Connect ───────────────────────────────────────
+async function doConnect() {
+  const id = document.getElementById('sheet-id').value.trim();
+  if (!id) { alert('Please paste your Sheet ID first.'); return; }
+  sheetId = id;
+  const lbl = document.getElementById('connect-label');
+  lbl.innerHTML = '<span class="spinner"></span> Loading…';
+  try {
+    await fetchAllTabs(id);
+    localStorage.setItem('ssb_sheet_id', id);
+    localStorage.setItem('ssb_tabs', JSON.stringify(Object.keys(sheetTabs)));
+    buildTabButtons();
+    buildMappers();
+    goStep(2);
+    previewTab(tabNames[0]);
+  } catch(e) {
+    alert('Could not read sheet.\n\n• Make sure you published it (File → Share → Publish to web → CSV)\n• Check the Sheet ID is correct\n\nError: ' + e.message);
+  }
+  lbl.innerHTML = 'Connect & preview →';
+}
+
+async function fetchAllTabs(id) {
+  // First fetch sheet metadata via HTML to discover tab names
+  const metaUrl = `https://docs.google.com/spreadsheets/d/${id}/edit`;
+  // Fallback: try gid=0,1,2... and named tabs
+  // We use gviz to get sheet names
+  const gvizUrl = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json`;
+  const res = await fetch(gvizUrl);
+  const text = await res.text();
+  // Extract sheet names from gviz response
+  const namesMatch = text.match(/"name":"([^"]+)"/g) || [];
+  let discovered = namesMatch.map(m => m.replace(/"name":"/, '').replace(/"/, ''));
+  // Also try fetching by gid index if name discovery fails
+  if (!discovered.length) discovered = ['Sheet1','Sheet2','Sheet3'];
+
+  sheetTabs = {};
+  tabNames = [];
+  const base = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=`;
+  for (const name of discovered) {
+    try {
+      const r = await fetch(base + encodeURIComponent(name));
+      if (!r.ok) continue;
+      const txt = await r.text();
+      if (!txt.trim()) continue;
+      const parsed = Papa.parse(txt, { header:true, skipEmptyLines:true });
+      if (parsed.data.length > 0) {
+        sheetTabs[name] = parsed.data;
+        tabNames.push(name);
+      }
+    } catch(_) {}
+  }
+  if (!tabNames.length) throw new Error('No readable tabs found');
+}
+
+// ── Step 2: Preview ───────────────────────────────────────
+function buildTabButtons() {
+  const wrap = document.getElementById('tab-btns');
+  wrap.innerHTML = tabNames.map((n,i) =>
+    `<button class="sheet-tab-btn${i===0?' active':''}" onclick="previewTab('${n}',this)">${n}</button>`
+  ).join('');
+}
+
+function previewTab(name, btn) {
+  document.querySelectorAll('.sheet-tab-btn').forEach(b=>b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else document.querySelector('.sheet-tab-btn')?.classList.add('active');
+  const rows = sheetTabs[name] || [];
+  if (!rows.length) { document.getElementById('preview-tbl').innerHTML = '<tr><td colspan="10" style="padding:20px;color:var(--muted);text-align:center">No data in this tab</td></tr>'; return; }
+  const cols = Object.keys(rows[0]);
+  const thead = `<thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>`;
+  const sample = rows.slice(0,6);
+  const tbody = `<tbody>${sample.map(r=>`<tr>${cols.map(c=>`<td>${r[c]??''}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  document.getElementById('preview-tbl').innerHTML = thead+tbody;
+}
+
+// ── Step 3: Map ───────────────────────────────────────────
+function buildMappers() {
+  renderMapGroup('map-enrollment', ENROLLMENT_FIELDS);
+  renderMapGroup('map-events', EVENT_FIELDS);
+  renderMapGroup('map-apps', APP_FIELDS);
+}
+
+function renderMapGroup(containerId, fields) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = fields.map(f => `
+    <div class="map-grid">
+      <div class="map-field">${f.label}${f.required?' <span style="color:var(--red)">*</span>':' <span style="color:var(--muted);font-weight:400;font-size:10px">(optional)</span>'}</div>
+      <div class="map-arrow">→</div>
+      <div>
+        <select class="map-select" id="tab-${f.key}" onchange="updateColSelect('${f.key}')">
+          <option value="">— skip —</option>
+          ${tabNames.map(t=>`<option value="${t}">${t}</option>`).join('')}
+        </select>
+        <select class="map-select" id="col-${f.key}" style="margin-top:5px;display:none">
+          <option value="">— pick column —</option>
+        </select>
+      </div>
+    </div>`).join('');
+}
+
+function updateColSelect(key) {
+  const tabSel = document.getElementById(`tab-${key}`);
+  const colSel = document.getElementById(`col-${key}`);
+  const tab = tabSel.value;
+  if (!tab) { colSel.style.display='none'; return; }
+  const cols = sheetTabs[tab] ? Object.keys(sheetTabs[tab][0]||{}) : [];
+  colSel.innerHTML = `<option value="">— pick column —</option>` + cols.map(c=>`<option value="${c}">${c}</option>`).join('');
+  colSel.style.display = '';
+}
+
+function applyMapping() {
+  // Collect all selections
+  const allFields = [...ENROLLMENT_FIELDS, ...EVENT_FIELDS, ...APP_FIELDS];
+  const m = {};
+  let missingRequired = [];
+  allFields.forEach(f => {
+    const tab = document.getElementById(`tab-${f.key}`)?.value;
+    const col = document.getElementById(`col-${f.key}`)?.value;
+    if (tab && col) m[f.key] = { tab, col };
+    else if (f.required && !tab) missingRequired.push(f.label);
+  });
+  if (missingRequired.length) {
+    alert('Please map these required fields:\n• ' + missingRequired.join('\n• '));
+    return;
+  }
+  mapping = m;
+  localStorage.setItem('ssb_mapping', JSON.stringify(mapping));
+  goStep(4);
+}
+
+// ── Demo mode ─────────────────────────────────────────────
+function loadDemo() {
+  // Inject fake sheet tabs mimicking a real messy sheet
+  sheetTabs = {
+    'Graduate Enrollment': [
+      {Semester:'Spring 2025', Program:'BAIS',    Headcount:'398', RetRate:'95%'},
+      {Semester:'Spring 2025', Program:'MBA',     Headcount:'347', RetRate:'93%'},
+      {Semester:'Spring 2025', Program:'Finance', Headcount:'282', RetRate:'94%'},
+      {Semester:'Spring 2025', Program:'Mgmt',    Headcount:'167', RetRate:'92%'},
+      {Semester:'Fall 2024',   Program:'BAIS',    Headcount:'352', RetRate:'93%'},
+      {Semester:'Fall 2024',   Program:'MBA',     Headcount:'320', RetRate:'91%'},
+    ],
+    'Events Log': [
+      {EventName:'MBA Info Session',    Date:'Mar 28',Attended:'',  Status:'upcoming'},
+      {EventName:'BAIS Career Panel',   Date:'Mar 15',Attended:'142',Status:'done'},
+      {EventName:'Finance Night',       Date:'Mar 8', Attended:'98', Status:'done'},
+      {EventName:'Admissions Webinar',  Date:'Feb 27',Attended:'211',Status:'done'},
+      {EventName:'Research Symposium',  Date:'Feb 20',Attended:'87', Status:'done'},
+    ],
+    'Applications': [
+      {Term:'Spring 2025', Stage:'Submitted',   Count:'347'},
+      {Term:'Spring 2025', Stage:'Under Review',Count:'250'},
+      {Term:'Spring 2025', Stage:'Admitted',    Count:'112'},
+      {Term:'Spring 2025', Stage:'Enrolled',    Count:'68'},
+    ]
+  };
+  tabNames = Object.keys(sheetTabs);
+  sheetId = 'DEMO';
+
+  // Auto-map for demo
+  mapping = {
+    term:     { tab:'Graduate Enrollment', col:'Semester' },
+    total:    { tab:'Graduate Enrollment', col:'Headcount' },
+    program:  { tab:'Graduate Enrollment', col:'Program' },
+    retention:{ tab:'Graduate Enrollment', col:'RetRate' },
+    ev_name:  { tab:'Events Log', col:'EventName' },
+    ev_date:  { tab:'Events Log', col:'Date' },
+    ev_att:   { tab:'Events Log', col:'Attended' },
+    ev_status:{ tab:'Events Log', col:'Status' },
+    app_term: { tab:'Applications', col:'Term' },
+    app_count:{ tab:'Applications', col:'Count' },
+    app_stage:{ tab:'Applications', col:'Stage' },
+  };
+  buildDashboard();
+  showDashboard();
+  document.getElementById('live-label').textContent = 'Demo mode — connect your sheet to go live';
+}
+
+// ── Build dashboard from mapping ──────────────────────────
+function buildDashboard() {
+  buildKPIs();
+  buildMainChart();
+  buildDonut();
+  buildTables();
+}
+
+function getCol(key) {
+  const m = mapping[key];
+  if (!m) return [];
+  return (sheetTabs[m.tab]||[]).map(r => r[m.col] ?? '');
+}
+
+function getRows(tab) { return sheetTabs[tab] || []; }
+
+function buildKPIs() {
+  const wrap = document.getElementById('kpi-row');
+  const totals = getCol('total').map(v => parseFloat(v.toString().replace(/[^0-9.]/g,''))||0);
+  const grandTotal = totals.reduce((a,b)=>a+b,0);
+
+  const events = mapping.ev_name ? getRows(mapping.ev_name.tab) : [];
+  const doneEvents = events.filter(r => (r[mapping.ev_status?.col]||'').toLowerCase()==='done').length;
+  const upcomingEvents = events.filter(r => (r[mapping.ev_status?.col]||'').toLowerCase()==='upcoming').length;
+
+  const avgAtt = (() => {
+    if (!mapping.ev_att) return null;
+    const vals = events.map(r=>parseFloat(r[mapping.ev_att.col])||0).filter(v=>v>0);
+    return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : null;
+  })();
+
+  const apps = (() => {
+    if (!mapping.app_count) return null;
+    return getRows(mapping.app_count ? mapping.app_term?.tab||mapping.app_count.tab : '')
+      .map(r=>parseFloat(r[mapping.app_count.col])||0)
+      .reduce((a,b)=>a+b,0);
+  })();
+
+  const kpis = [
+    { label:'Total Enrollment', value: grandTotal ? grandTotal.toLocaleString() : '—', accent:'var(--red)', note: mapping.term ? `across ${[...new Set(getCol('term'))].length} terms` : '' },
+    { label:'Events Completed',  value: doneEvents || '—', accent:'var(--gold)', note: upcomingEvents ? `${upcomingEvents} upcoming` : '' },
+    { label:'Avg Attendance',    value: avgAtt ? avgAtt.toLocaleString() : '—', accent:'var(--green)', note: 'per event' },
+    { label:'Applications',      value: apps ? apps.toLocaleString() : '—', accent:'var(--blue)', note: '' },
+  ];
+
+  wrap.innerHTML = kpis.map(k => `
+    <div class="kpi">
+      <div class="kpi-accent" style="background:${k.accent}"></div>
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      ${k.note ? `<div class="kpi-note">${k.note}</div>` : ''}
+    </div>`).join('');
+}
+
+function buildMainChart() {
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  if (mainChart) mainChart.destroy();
+
+  if (mapping.ev_name && mapping.ev_att) {
+    // Event attendance bar chart
+    const rows = getRows(mapping.ev_name.tab);
+    const labels = rows.map(r=>r[mapping.ev_name.col]).slice(0,8);
+    const data = rows.map(r=>parseFloat(r[mapping.ev_att.col])||0).slice(0,8);
+    document.getElementById('chart1-title').textContent = 'Event Attendance';
+    mainChart = new Chart(ctx, {
+      type:'bar', data:{ labels, datasets:[{data, backgroundColor:'rgba(163,38,56,0.7)', borderColor:'#A32638', borderWidth:1.5, borderRadius:5}]},
+      options:{ responsive:true, plugins:{legend:{display:false}},
+        scales:{ x:{grid:{display:false}, ticks:{font:{family:'DM Sans',size:10},color:'#6B7280',maxRotation:30}},
+                 y:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{font:{family:'DM Mono',size:10},color:'#6B7280'}} } }
+    });
+  } else if (mapping.total) {
+    // Enrollment line chart
+    const terms = [...new Set(getCol('term'))];
+    const totals = terms.map(t => {
+      const rows = getRows(mapping.total.tab).filter(r=>r[mapping.term?.col]===t);
+      return rows.reduce((s,r)=>s+(parseFloat(r[mapping.total.col])||0),0);
+    });
+    document.getElementById('chart1-title').textContent = 'Enrollment by Term';
+    mainChart = new Chart(ctx, {
+      type:'line', data:{ labels:terms, datasets:[{data:totals, borderColor:'#A32638', backgroundColor:'rgba(163,38,56,0.07)', borderWidth:2.5, tension:0.4, fill:true, pointRadius:4, pointBackgroundColor:'#A32638'}]},
+      options:{ responsive:true, plugins:{legend:{display:false}},
+        scales:{ x:{grid:{display:false}, ticks:{font:{family:'DM Sans',size:11},color:'#6B7280'}},
+                 y:{grid:{color:'rgba(0,0,0,0.05)'}, ticks:{font:{family:'DM Mono',size:11},color:'#6B7280'}} } }
+    });
+  } else {
+    document.getElementById('chart1-title').textContent = 'No chart data mapped';
+    ctx.canvas.style.display='none';
+  }
+}
+
+function buildDonut() {
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  if (donutChart) donutChart.destroy();
+  const COLORS = ['#A32638','#C89A3A','#2563EB','#16A34A','#9333EA','#9CA3AF'];
+
+  if (mapping.program && mapping.total) {
+    const rows = getRows(mapping.total.tab);
+    const byProgram = {};
+    rows.forEach(r => {
+      const prog = r[mapping.program.col] || 'Other';
+      byProgram[prog] = (byProgram[prog]||0) + (parseFloat(r[mapping.total.col])||0);
+    });
+    const labels = Object.keys(byProgram);
+    const data = labels.map(l=>byProgram[l]);
+    document.getElementById('chart2-title').textContent = 'Program Mix';
+    donutChart = new Chart(ctx, {
+      type:'doughnut', data:{ labels, datasets:[{data, backgroundColor:COLORS.slice(0,labels.length), borderWidth:0, hoverOffset:4}]},
+      options:{ cutout:'65%', plugins:{ legend:{ position:'bottom', labels:{ font:{family:'DM Sans',size:11}, color:'#6B7280', boxWidth:10, padding:10 } }, tooltip:{ callbacks:{ label: ctx=>' '+ctx.label+': '+ctx.raw.toLocaleString() } } } }
+    });
+  } else if (mapping.app_stage && mapping.app_count) {
+    const rows = getRows(mapping.app_stage.tab);
+    const labels = rows.map(r=>r[mapping.app_stage.col]);
+    const data = rows.map(r=>parseFloat(r[mapping.app_count.col])||0);
+    document.getElementById('chart2-title').textContent = 'Application Funnel';
+    donutChart = new Chart(ctx, {
+      type:'doughnut', data:{ labels, datasets:[{data, backgroundColor:COLORS, borderWidth:0, hoverOffset:4}]},
+      options:{ cutout:'65%', plugins:{ legend:{ position:'bottom', labels:{ font:{family:'DM Sans',size:10}, color:'#6B7280', boxWidth:10, padding:8 } } } }
+    });
+  } else {
+    document.getElementById('chart2-title').textContent = 'No breakdown data';
+    ctx.canvas.style.display='none';
+  }
+}
+
+function buildTables() {
+  // Table 1: Enrollment / main data
+  if (mapping.total) {
+    const tab = mapping.total.tab;
+    const rows = getRows(tab).slice(0,8);
+    const cols = rows.length ? Object.keys(rows[0]) : [];
+    document.getElementById('tbl1-title').textContent = tab;
+    document.getElementById('tbl1-wrap').innerHTML = makeTable(cols, rows);
+  }
+
+  // Table 2: Events
+  if (mapping.ev_name) {
+    const tab = mapping.ev_name.tab;
+    const rows = getRows(tab);
+    const cols = rows.length ? Object.keys(rows[0]) : [];
+    document.getElementById('tbl2-title').textContent = tab;
+    document.getElementById('tbl2-wrap').innerHTML = makeTable(cols, rows);
+  } else if (mapping.app_stage) {
+    const tab = mapping.app_stage.tab;
+    const rows = getRows(tab);
+    const cols = rows.length ? Object.keys(rows[0]) : [];
+    document.getElementById('tbl2-title').textContent = tab;
+    document.getElementById('tbl2-wrap').innerHTML = makeTable(cols, rows);
+  }
+}
+
+function makeTable(cols, rows) {
+  if (!rows.length) return '<div class="no-data">No data</div>';
+  return `<table class="data-table">
+    <thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${r[c]??''}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ── Show / hide dashboard ─────────────────────────────────
+function showDashboard() {
+  document.getElementById('wizard').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  buildDashboard();
+  if (sheetId && sheetId!=='DEMO') {
+    document.getElementById('live-label').textContent = 'Live · auto-refreshes every 5 min';
+  }
+}
+
+function resetWizard() {
+  document.getElementById('wizard').style.display='';
+  document.getElementById('dashboard').style.display='none';
+  goStep(1);
+}
+
+// ── Auto-restore saved config ─────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  const saved = localStorage.getItem('ssb_sheet_id');
+  const savedMapping = localStorage.getItem('ssb_mapping');
+  if (saved && savedMapping) {
+    sheetId = saved;
+    document.getElementById('sheet-id').value = saved;
+    try {
+      await fetchAllTabs(saved);
+      mapping = JSON.parse(savedMapping);
+      showDashboard();
+      document.getElementById('live-label').textContent = 'Live · restored from last session';
+    } catch(_) { /* silently fall through to wizard */ }
+  }
+});
+</script>
+</body>
+</html>
