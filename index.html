@@ -414,9 +414,14 @@ async function fetchGS(id){
   const res=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json');
   if(!res.ok)throw new Error('not accessible');
   const txt=await res.text();
+  // Extract all sheet names from gviz metadata
   const hits=[...txt.matchAll(/"name":"([^"]+)"/g)];
-  let names=hits.map(m=>m[1]).filter((v,i,a)=>a.indexOf(v)===i).slice(0,25);
+  let names=hits.map(m=>m[1]).filter((v,i,a)=>a.indexOf(v)===i);
+  // Filter out internal gviz names (they tend to be short reused words)
+  // Keep all unique names found
+  names=names.slice(0,30);
   if(!names.length)names=['Sheet1'];
+  console.log('Discovered sheet names:',names);
   S.tabs={};S.names=[];
   const base='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv&sheet=';
   for(const name of names){
@@ -438,16 +443,45 @@ async function loadXL(){
   loading(true,'Reading Excel file…');
   try{
     const buf=await f.arrayBuffer();
-    const wb=XLSX.read(buf,{type:'array'});
+    // Read with cellDates to handle date columns
+    const wb=XLSX.read(buf,{type:'array',cellDates:true,cellNF:true});
     S.tabs={};S.names=[];
-    for(const name of(wb.SheetNames||[])){
+    const sheetNames=wb.SheetNames||[];
+    loading(true,'Found '+sheetNames.length+' sheet(s), reading…');
+    for(const name of sheetNames){
       try{
-        const rows=cleanRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:'',raw:false}));
-        if(rows.length){S.tabs[name]=rows;S.names.push(name);}
-      }catch(_){}
+        const ws=wb.Sheets[name];
+        if(!ws)continue;
+        // Try parsing with header row first
+        let raw=XLSX.utils.sheet_to_json(ws,{defval:'',raw:false,blankrows:false});
+        // If no rows, try with header array to see raw data
+        if(!raw.length){
+          const arr=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false,blankrows:false});
+          if(arr.length>1){
+            const headers=arr[0].map((h,i)=>h||'Column_'+i);
+            raw=arr.slice(1).map(row=>{
+              const obj={};
+              headers.forEach((h,i)=>{obj[h]=sv(row[i]);});
+              return obj;
+            });
+          }
+        }
+        const rows=cleanRows(raw);
+        if(rows.length){
+          S.tabs[name]=rows;
+          S.names.push(name);
+        }
+      }catch(sheetErr){
+        // Sheet failed — skip it but continue with others
+        console.warn('Skipped sheet:',name,sheetErr);
+      }
     }
-    if(!S.names.length)throw new Error('No readable data found');
-    loading(false);launch('Excel',false);
+    if(!S.names.length)throw new Error('No readable data found. Make sure sheets have a header row in row 1.');
+    loading(false);
+    // Show how many tabs loaded
+    const msg=S.names.length+' of '+sheetNames.length+' sheet(s) loaded';
+    console.log(msg, S.names);
+    launch('Excel',false);
   }catch(e){loading(false);showErr('xl',e.message);}
 }
 
