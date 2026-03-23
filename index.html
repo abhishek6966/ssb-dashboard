@@ -1,1 +1,671 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSB Operations Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #A32638; --red-light: #C23050; --red-dim: rgba(163,38,56,0.10);
+  --gold: #C89A3A; --gold-dim: rgba(200,154,58,0.12);
+  --green: #16A34A; --green-dim: rgba(22,163,74,0.10);
+  --blue: #2563EB; --blue-dim: rgba(37,99,235,0.10);
+  --ink: #1C1C1E; --muted: #6B7280; --border: rgba(0,0,0,0.08);
+  --surface: #FFFFFF; --bg: #F4F5F7;
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; }
+.dash { max-width: 1100px; margin: 0 auto; padding: 24px 20px 48px; }
+
+/* Setup Banner */
+#setup-banner {
+  background: #1A2340; color: #fff; border-radius: 14px; padding: 20px 24px;
+  margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+#setup-banner h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+#setup-banner p { font-size: 12px; opacity: .7; line-height: 1.5; }
+#setup-banner .setup-input {
+  flex: 1; min-width: 260px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px; padding: 9px 13px; color: #fff; font-family: 'DM Mono', monospace;
+  font-size: 12px; outline: none; width: 100%;
+}
+#setup-banner .setup-input::placeholder { opacity: .5; }
+.connect-btn {
+  background: var(--red); color: #fff; border: none; border-radius: 8px;
+  padding: 9px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+  font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+.connect-btn:hover { opacity: .88; }
+.demo-badge {
+  background: var(--gold); color: #fff; font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 20px; letter-spacing: .4px;
+}
+
+/* Status bar */
+#status-bar {
+  display: flex; align-items: center; gap: 8px; font-size: 12px;
+  color: var(--muted); margin-bottom: 20px;
+}
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.status-dot.live { background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* Header */
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.logo-mark { width: 40px; height: 40px; background: var(--red); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.logo-mark span { color: #fff; font-weight: 600; font-size: 15px; letter-spacing: -0.5px; }
+.header-title { font-size: 18px; font-weight: 600; line-height: 1.2; }
+.header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.header-right { display: flex; align-items: center; gap: 8px; }
+.term-select {
+  font-family: 'DM Sans', sans-serif; font-size: 13px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--ink); border-radius: 8px; padding: 7px 11px; cursor: pointer; outline: none;
+}
+.export-btn {
+  font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--red); color: #fff;
+  border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer; font-weight: 500;
+}
+.export-btn:hover { opacity: .88; }
+
+/* KPI row */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.kpi {
+  background: var(--surface); border-radius: 14px; padding: 18px 20px;
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+  transition: box-shadow .2s, transform .2s;
+}
+.kpi:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.09); transform: translateY(-1px); }
+.kpi-accent { position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 14px 0 0 14px; }
+.kpi-label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; }
+.kpi-value { font-size: 28px; font-weight: 600; line-height: 1; font-family: 'DM Mono', monospace; }
+.kpi-delta {
+  display: inline-flex; align-items: center; font-size: 11px; font-weight: 500;
+  margin-top: 8px; padding: 2px 8px; border-radius: 20px;
+}
+.up { background: var(--green-dim); color: var(--green); }
+.down { background: var(--red-dim); color: var(--red); }
+
+/* Charts */
+.charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 16px; }
+.card {
+  background: var(--surface); border-radius: 14px; border: 1px solid var(--border);
+  padding: 20px 22px;
+}
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.card-title { font-size: 13px; font-weight: 600; }
+.pill-group { display: flex; gap: 4px; }
+.pill {
+  font-size: 11px; padding: 3px 10px; border-radius: 20px; cursor: pointer;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  font-family: 'DM Sans', sans-serif; transition: all .15s;
+}
+.pill.active { background: var(--red-dim); border-color: var(--red); color: var(--red); font-weight: 500; }
+
+/* Donut */
+.donut-wrap { position: relative; max-width: 200px; margin: 0 auto; }
+.donut-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center; pointer-events: none;
+}
+.donut-center-val { font-size: 20px; font-weight: 600; font-family: 'DM Mono', monospace; }
+.donut-center-label { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.legend { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+.legend-name { font-size: 12px; color: var(--muted); flex: 1; }
+.legend-pct { font-size: 12px; font-family: 'DM Mono', monospace; font-weight: 500; }
+
+/* Bottom row */
+.bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Pipeline */
+.pipeline-list { display: flex; flex-direction: column; gap: 10px; }
+.pipe-item { display: flex; align-items: center; gap: 10px; }
+.pipe-label { font-size: 12px; color: var(--muted); width: 100px; flex-shrink: 0; }
+.pipe-bar-wrap { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.pipe-bar { height: 100%; border-radius: 4px; transition: width .9s cubic-bezier(.4,0,.2,1); }
+.pipe-count { font-size: 12px; font-weight: 500; font-family: 'DM Mono', monospace; width: 34px; text-align: right; flex-shrink: 0; }
+.stat-row { display: flex; gap: 16px; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; }
+.stat-item .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+.stat-item .stat-val { font-size: 16px; font-weight: 600; font-family: 'DM Mono', monospace; }
+
+/* Events */
+.events-list { display: flex; flex-direction: column; }
+.event-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.event-row:last-child { border-bottom: none; }
+.event-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.event-name { font-size: 12px; font-weight: 500; flex: 1; }
+.event-date { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+.event-att { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); width: 56px; text-align: right; flex-shrink: 0; }
+.event-pill {
+  font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; flex-shrink: 0;
+}
+.upcoming { background: var(--blue-dim); color: var(--blue); }
+.done { background: var(--green-dim); color: var(--green); }
+
+/* Loading */
+#loading { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
+.spinner {
+  width: 28px; height: 28px; border: 3px solid var(--border);
+  border-top-color: var(--red); border-radius: 50%;
+  animation: spin .8s linear infinite; margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Setup guide */
+#setup-guide {
+  background: var(--surface); border-radius: 14px; border: 1px solid var(--border);
+  padding: 22px 24px; margin-top: 16px;
+}
+#setup-guide h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+.step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: var(--red); color: #fff;
+  font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.step-body { font-size: 13px; line-height: 1.6; color: var(--muted); }
+.step-body b { color: var(--ink); font-weight: 500; }
+code {
+  font-family: 'DM Mono', monospace; font-size: 11px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; color: var(--ink);
+}
+.sheet-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+.sheet-table th { background: var(--bg); padding: 7px 10px; text-align: left; font-weight: 500; border: 1px solid var(--border); }
+.sheet-table td { padding: 6px 10px; border: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+.sheet-tab { display: inline-block; padding: 2px 10px; border-radius: 6px 6px 0 0; font-size: 12px; font-weight: 500; margin-right: 4px; margin-bottom: 8px; border: 1px solid var(--border); }
+.tab-kpi { background: var(--red-dim); color: var(--red); border-color: var(--red); }
+.tab-enroll { background: var(--blue-dim); color: var(--blue); border-color: var(--blue); }
+.tab-pipeline { background: var(--gold-dim); color: var(--gold); border-color: var(--gold); }
+.tab-events { background: var(--green-dim); color: var(--green); border-color: var(--green); }
+
+@media (max-width: 700px) {
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .charts-row, .bottom-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="dash">
+
+  <!-- Setup Banner -->
+  <div id="setup-banner">
+    <div style="flex:1;min-width:200px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <h3>Connect your Google Sheet</h3>
+        <span class="demo-badge" id="demo-badge">DEMO MODE</span>
+      </div>
+      <p>Paste your Google Sheet ID below. Staff update the sheet → dashboard updates automatically. No login needed.</p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:280px">
+      <input class="setup-input" id="sheet-id-input" placeholder="e.g. 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" />
+      <button class="connect-btn" onclick="connectSheet()">Connect</button>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div id="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Showing demo data — connect your sheet to go live</span>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading"><div class="spinner"></div>Fetching from Google Sheets...</div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-mark"><span>SSB</span></div>
+        <div>
+          <div class="header-title">School of Business — Operations Dashboard</div>
+          <div class="header-sub">Stevens Institute of Technology · Graduate Programs</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <select class="term-select" id="term-select" onchange="renderTerm(this.value)">
+          <option value="Spring 2025">Spring 2025</option>
+          <option value="Fall 2024">Fall 2024</option>
+          <option value="Spring 2024">Spring 2024</option>
+        </select>
+        <button class="export-btn" onclick="window.print()">↓ Export PDF</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-accent" style="background:var(--red)"></div><div class="kpi-label">Total Enrollment</div><div class="kpi-value" id="kpi-enroll">—</div><div class="kpi-delta" id="kpi-enroll-d"></div></div>
+      <div class="kpi"><div class="kpi-accent" style="background:var(--gold)"></div><div class="kpi-label">Applications</div><div class="kpi-value" id="kpi-apps">—</div><div class="kpi-delta" id="kpi-apps-d"></div></div>
+      <div class="kpi"><div class="kpi-accent" style="background:var(--green)"></div><div class="kpi-label">Retention Rate</div><div class="kpi-value" id="kpi-ret">—</div><div class="kpi-delta" id="kpi-ret-d"></div></div>
+      <div class="kpi"><div class="kpi-accent" style="background:var(--blue)"></div><div class="kpi-label">Events Held</div><div class="kpi-value" id="kpi-events">—</div><div class="kpi-delta" id="kpi-events-d"></div></div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Enrollment Trend</div>
+          <div class="pill-group">
+            <button class="pill active" onclick="switchLine('All',this)">All</button>
+            <button class="pill" onclick="switchLine('BAIS',this)">BAIS</button>
+            <button class="pill" onclick="switchLine('MBA',this)">MBA</button>
+            <button class="pill" onclick="switchLine('Finance',this)">Finance</button>
+          </div>
+        </div>
+        <canvas id="enrollChart" style="max-height:200px"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Program Mix</div></div>
+        <div class="donut-wrap">
+          <canvas id="donutChart" style="max-height:170px"></canvas>
+          <div class="donut-center">
+            <div class="donut-center-val" id="donut-total">—</div>
+            <div class="donut-center-label">students</div>
+          </div>
+        </div>
+        <div class="legend" id="donut-legend"></div>
+      </div>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="bottom-row">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Application Pipeline</div>
+          <div style="font-size:11px;color:var(--muted)" id="pipe-term"></div>
+        </div>
+        <div class="pipeline-list" id="pipeline-list"></div>
+        <div class="stat-row" id="stat-row"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Events</div>
+          <div style="font-size:11px;color:var(--muted)">Attendance tracked</div>
+        </div>
+        <div class="events-list" id="events-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup Guide (shown when no sheet connected) -->
+  <div id="setup-guide">
+    <h3>How to set up your Google Sheet</h3>
+
+    <div style="margin-bottom:16px">
+      Create one Google Sheet with <b>4 tabs</b> named exactly as shown:
+    </div>
+
+    <!-- KPIs tab -->
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <span class="sheet-tab tab-kpi">KPIs</span> — One row per term<br>
+        <table class="sheet-table">
+          <tr><th>Term</th><th>Enrollment</th><th>Applications</th><th>Retention</th><th>Events</th><th>EnrollDelta</th><th>AppDelta</th><th>RetDelta</th><th>EventDelta</th></tr>
+          <tr><td>Spring 2025</td><td>1284</td><td>347</td><td>94.1%</td><td>23</td><td>▲ 8.2%</td><td>▲ 12.4%</td><td>▲ 1.3pp</td><td>▼ 2</td></tr>
+          <tr><td>Fall 2024</td><td>1187</td><td>309</td><td>92.8%</td><td>25</td><td>▲ 5.1%</td><td>▲ 9.2%</td><td>▲ 0.8pp</td><td>▲ 3</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Enrollment tab -->
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <span class="sheet-tab tab-enroll">Enrollment</span> — Monthly trend data per term<br>
+        <table class="sheet-table">
+          <tr><th>Term</th><th>Month</th><th>All</th><th>BAIS</th><th>MBA</th><th>Finance</th></tr>
+          <tr><td>Spring 2025</td><td>Aug</td><td>920</td><td>210</td><td>260</td><td>195</td></tr>
+          <tr><td>Spring 2025</td><td>Oct</td><td>980</td><td>230</td><td>275</td><td>210</td></tr>
+          <tr><td colspan="6" style="text-align:center;color:var(--muted)">...continue for each month...</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pipeline tab -->
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <span class="sheet-tab tab-pipeline">Pipeline</span> — Application funnel stages per term<br>
+        <table class="sheet-table">
+          <tr><th>Term</th><th>Stage</th><th>Count</th><th>Color</th></tr>
+          <tr><td>Spring 2025</td><td>Submitted</td><td>347</td><td>#A32638</td></tr>
+          <tr><td>Spring 2025</td><td>Under Review</td><td>250</td><td>#C89A3A</td></tr>
+          <tr><td>Spring 2025</td><td>Interviewed</td><td>166</td><td>#2563EB</td></tr>
+          <tr><td>Spring 2025</td><td>Admitted</td><td>112</td><td>#16A34A</td></tr>
+          <tr><td>Spring 2025</td><td>Enrolled</td><td>68</td><td>#9333EA</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Events tab -->
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <span class="sheet-tab tab-events">Events</span> — One row per event<br>
+        <table class="sheet-table">
+          <tr><th>Term</th><th>Name</th><th>Date</th><th>Attendance</th><th>Color</th><th>Status</th></tr>
+          <tr><td>Spring 2025</td><td>MBA Info Session</td><td>Mar 28</td><td></td><td>#A32638</td><td>upcoming</td></tr>
+          <tr><td>Spring 2025</td><td>BAIS Career Panel</td><td>Mar 15</td><td>142</td><td>#A32638</td><td>done</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Publish steps -->
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <b>Publish the sheet:</b> In Google Sheets → <b>File → Share → Publish to web</b> → choose <b>Entire document</b> → <b>CSV</b> → click Publish.<br><br>
+        Then copy your Sheet ID from the URL:<br>
+        <code>https://docs.google.com/spreadsheets/d/<b style="color:var(--red)">YOUR_SHEET_ID_HERE</b>/edit</code><br><br>
+        Paste that ID into the input at the top of this dashboard and click <b>Connect</b>. That's it — staff update the sheet, the dashboard refreshes automatically every 5 minutes.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Demo data ───────────────────────────────────────────
+const DEMO = {
+  kpis: {
+    'Spring 2025': { enrollment:'1,284', apps:'347', retention:'94.1%', events:'23', ed:'▲ 8.2%', ad:'▲ 12.4%', rd:'▲ 1.3pp', evd:'▼ 2', edup:true, adup:true, rdup:true, evdup:false },
+    'Fall 2024':   { enrollment:'1,187', apps:'309', retention:'92.8%', events:'25', ed:'▲ 5.1%', ad:'▲ 9.2%',  rd:'▲ 0.8pp', evd:'▲ 3',  edup:true, adup:true, rdup:true, evdup:true },
+    'Spring 2024': { enrollment:'1,130', apps:'275', retention:'92.0%', events:'22', ed:'▲ 3.8%', ad:'▲ 4.5%',  rd:'▼ 0.2pp', evd:'▼ 1',  edup:true, adup:true, rdup:false, evdup:false },
+  },
+  enrollment: {
+    labels: ['Aug','Oct','Dec','Feb','Mar','Now'],
+    'Spring 2025': { All:[920,980,1040,1105,1180,1284], BAIS:[210,230,255,280,360,398], MBA:[260,275,290,300,320,347], Finance:[195,210,220,235,250,282] },
+    'Fall 2024':   { All:[820,880,940,1010,1090,1187], BAIS:[180,200,225,250,310,352], MBA:[230,250,265,280,295,320], Finance:[170,185,200,215,235,265] },
+    'Spring 2024': { All:[800,840,880,950,1040,1130], BAIS:[165,180,200,230,280,330], MBA:[210,225,240,255,270,295], Finance:[155,165,178,195,210,248] },
+  },
+  donut: {
+    labels:['BAIS','MBA','Finance','Management','Other'],
+    data:[31,27,22,13,7],
+    colors:['#A32638','#C89A3A','#2563EB','#16A34A','#9CA3AF']
+  },
+  pipeline: {
+    'Spring 2025': [ {stage:'Submitted',count:347,color:'#A32638'},{stage:'Under Review',count:250,color:'#C89A3A'},{stage:'Interviewed',count:166,color:'#2563EB'},{stage:'Admitted',count:112,color:'#16A34A'},{stage:'Enrolled',count:68,color:'#9333EA'} ],
+    'Fall 2024':   [ {stage:'Submitted',count:309,color:'#A32638'},{stage:'Under Review',count:220,color:'#C89A3A'},{stage:'Interviewed',count:144,color:'#2563EB'},{stage:'Admitted',count:98,color:'#16A34A'},{stage:'Enrolled',count:55,color:'#9333EA'} ],
+    'Spring 2024': [ {stage:'Submitted',count:275,color:'#A32638'},{stage:'Under Review',count:195,color:'#C89A3A'},{stage:'Interviewed',count:128,color:'#2563EB'},{stage:'Admitted',count:88,color:'#16A34A'},{stage:'Enrolled',count:51,color:'#9333EA'} ],
+  },
+  events: {
+    'Spring 2025': [
+      {name:'MBA Info Session — Spring',date:'Mar 28',attendance:'',color:'#A32638',status:'upcoming'},
+      {name:'BAIS Career Panel',date:'Mar 15',attendance:'142',color:'#A32638',status:'done'},
+      {name:'Finance Networking Night',date:'Mar 8',attendance:'98',color:'#C89A3A',status:'done'},
+      {name:'Admissions Webinar — International',date:'Feb 27',attendance:'211',color:'#2563EB',status:'done'},
+      {name:'Student Research Symposium',date:'Feb 20',attendance:'87',color:'#16A34A',status:'done'},
+      {name:"SSB Dean's Welcome Dinner",date:'Jan 22',attendance:'163',color:'#9333EA',status:'done'},
+    ],
+  }
+};
+
+// ─── State ────────────────────────────────────────────────
+let sheetId = null;
+let sheetData = null;
+let currentTerm = 'Spring 2025';
+let currentLine = 'All';
+let enrollChart = null;
+let donutChart = null;
+let refreshInterval = null;
+
+// ─── Chart colours ────────────────────────────────────────
+const lineColors = { All:'#A32638', BAIS:'#A32638', MBA:'#C89A3A', Finance:'#2563EB' };
+
+// ─── Init ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('ssb_sheet_id');
+  if (saved) { document.getElementById('sheet-id-input').value = saved; connectSheet(); }
+  else loadDemo();
+});
+
+function loadDemo() {
+  sheetData = null;
+  currentTerm = 'Spring 2025';
+  buildCharts(DEMO);
+  renderTerm('Spring 2025');
+  setStatus(false, 'Showing demo data — connect your sheet to go live');
+  document.getElementById('demo-badge').style.display = '';
+  document.getElementById('setup-guide').style.display = '';
+}
+
+// ─── Google Sheets fetch ──────────────────────────────────
+async function connectSheet() {
+  const id = document.getElementById('sheet-id-input').value.trim();
+  if (!id) return;
+  sheetId = id;
+  localStorage.setItem('ssb_sheet_id', id);
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('dashboard').style.display = 'none';
+  try {
+    const data = await fetchSheetData(id);
+    sheetData = data;
+    buildCharts(data);
+    renderTerm(currentTerm);
+    document.getElementById('demo-badge').style.display = 'none';
+    document.getElementById('setup-guide').style.display = 'none';
+    setStatus(true, 'Live — synced from Google Sheets · refreshes every 5 min');
+    if (refreshInterval) clearInterval(refreshInterval);
+    refreshInterval = setInterval(async () => {
+      const fresh = await fetchSheetData(id);
+      sheetData = fresh;
+      renderTerm(currentTerm);
+      setStatus(true, 'Live — last synced ' + new Date().toLocaleTimeString());
+    }, 5 * 60 * 1000);
+  } catch (e) {
+    alert('Could not connect to sheet. Make sure it is published to the web as CSV and the ID is correct.\n\nError: ' + e.message);
+    loadDemo();
+  }
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+async function fetchSheetData(id) {
+  const base = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=`;
+  const tabs = ['KPIs','Enrollment','Pipeline','Events'];
+  const results = {};
+  for (const tab of tabs) {
+    const res = await fetch(base + encodeURIComponent(tab));
+    if (!res.ok) throw new Error(`Tab "${tab}" not found`);
+    const text = await res.text();
+    results[tab] = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
+  }
+  return parseSheetData(results);
+}
+
+function parseSheetData(raw) {
+  // KPIs
+  const kpis = {};
+  raw.KPIs.forEach(r => {
+    kpis[r.Term] = {
+      enrollment: Number(r.Enrollment).toLocaleString(), apps: r.Applications,
+      retention: r.Retention, events: r.Events,
+      ed: r.EnrollDelta, ad: r.AppDelta, rd: r.RetDelta, evd: r.EventDelta,
+      edup: r.EnrollDelta?.includes('▲'), adup: r.AppDelta?.includes('▲'),
+      rdup: r.RetDelta?.includes('▲'), evdup: r.EventDelta?.includes('▲')
+    };
+  });
+
+  // Enrollment trend
+  const terms = [...new Set(raw.Enrollment.map(r => r.Term))];
+  const enrollLabels = [...new Set(raw.Enrollment.map(r => r.Month))];
+  const enrollment = { labels: enrollLabels };
+  terms.forEach(term => {
+    const rows = raw.Enrollment.filter(r => r.Term === term);
+    enrollment[term] = {
+      All: rows.map(r => +r.All), BAIS: rows.map(r => +r.BAIS),
+      MBA: rows.map(r => +r.MBA), Finance: rows.map(r => +r.Finance)
+    };
+  });
+
+  // Donut — compute from latest KPI enrollment by program
+  const latestTerm = raw.KPIs[0]?.Term;
+  const latest = raw.Enrollment.filter(r => r.Term === latestTerm);
+  const last = latest[latest.length - 1] || {};
+  const bais = +last.BAIS||0, mba = +last.MBA||0, fin = +last.Finance||0;
+  const total = +last.All||0;
+  const other = total - bais - mba - fin;
+  const mgmt = Math.round(other * 0.65);
+  const oth = other - mgmt;
+  const donut = {
+    labels:['BAIS','MBA','Finance','Management','Other'],
+    data:[bais,mba,fin,mgmt,oth],
+    colors:['#A32638','#C89A3A','#2563EB','#16A34A','#9CA3AF']
+  };
+
+  // Pipeline
+  const pipeline = {};
+  raw.Pipeline.forEach(r => {
+    if (!pipeline[r.Term]) pipeline[r.Term] = [];
+    pipeline[r.Term].push({ stage: r.Stage, count: +r.Count, color: r.Color });
+  });
+
+  // Events
+  const events = {};
+  raw.Events.forEach(r => {
+    if (!events[r.Term]) events[r.Term] = [];
+    events[r.Term].push({ name: r.Name, date: r.Date, attendance: r.Attendance, color: r.Color, status: r.Status });
+  });
+
+  // Populate term select
+  const sel = document.getElementById('term-select');
+  sel.innerHTML = '';
+  Object.keys(kpis).forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; sel.appendChild(o); });
+  currentTerm = Object.keys(kpis)[0];
+  sel.value = currentTerm;
+
+  return { kpis, enrollment, donut, pipeline, events };
+}
+
+// ─── Render ───────────────────────────────────────────────
+function renderTerm(term) {
+  currentTerm = term;
+  const d = sheetData || DEMO;
+  const k = d.kpis[term] || d.kpis[Object.keys(d.kpis)[0]];
+  if (!k) return;
+
+  document.getElementById('kpi-enroll').textContent = k.enrollment;
+  document.getElementById('kpi-apps').textContent = k.apps;
+  document.getElementById('kpi-ret').textContent = k.retention;
+  document.getElementById('kpi-events').textContent = k.events;
+
+  setDelta('kpi-enroll-d', k.ed, k.edup);
+  setDelta('kpi-apps-d', k.ad, k.adup);
+  setDelta('kpi-ret-d', k.rd, k.rdup);
+  setDelta('kpi-events-d', k.evd, k.evdup);
+
+  // Update line chart
+  const enrollData = d.enrollment[term] || d.enrollment[Object.keys(d.enrollment)[0]];
+  if (enrollChart && enrollData) {
+    enrollChart.data.labels = d.enrollment.labels;
+    enrollChart.data.datasets[0].data = enrollData[currentLine] || enrollData.All;
+    enrollChart.update();
+  }
+
+  // Pipeline
+  const pipe = (d.pipeline[term] || d.pipeline[Object.keys(d.pipeline)[0]] || []);
+  document.getElementById('pipe-term').textContent = term;
+  const max = pipe[0]?.count || 1;
+  document.getElementById('pipeline-list').innerHTML = pipe.map(p => `
+    <div class="pipe-item">
+      <div class="pipe-label">${p.stage}</div>
+      <div class="pipe-bar-wrap"><div class="pipe-bar" style="width:${Math.round(p.count/max*100)}%;background:${p.color}"></div></div>
+      <div class="pipe-count">${p.count}</div>
+    </div>`).join('');
+
+  if (pipe.length >= 2) {
+    const submitted = pipe[0].count, admitted = pipe.find(p=>p.stage==='Admitted')?.count||0;
+    const enrolled = pipe.find(p=>p.stage==='Enrolled')?.count||0;
+    const days = '18';
+    document.getElementById('stat-row').innerHTML = `
+      <div class="stat-item"><div class="stat-label">Admit Rate</div><div class="stat-val" style="color:var(--green)">${(admitted/submitted*100).toFixed(1)}%</div></div>
+      <div class="stat-item"><div class="stat-label">Yield Rate</div><div class="stat-val" style="color:var(--blue)">${admitted>0?(enrolled/admitted*100).toFixed(1):0}%</div></div>
+      <div class="stat-item"><div class="stat-label">Avg Decision</div><div class="stat-val">${days} days</div></div>`;
+  }
+
+  // Events
+  const evs = d.events[term] || d.events[Object.keys(d.events)[0]] || [];
+  document.getElementById('events-list').innerHTML = evs.map(e => `
+    <div class="event-row">
+      <div class="event-dot" style="background:${e.color}"></div>
+      <div class="event-name">${e.name}</div>
+      <div class="event-date">${e.date}</div>
+      ${e.status==='upcoming'
+        ? '<div class="event-pill upcoming">Upcoming</div>'
+        : `<div class="event-att">${e.attendance}</div>`}
+    </div>`).join('');
+}
+
+function setDelta(id, text, isUp) {
+  const el = document.getElementById(id);
+  el.textContent = text + ' vs last term';
+  el.className = 'kpi-delta ' + (isUp ? 'up' : 'down');
+}
+
+// ─── Charts ───────────────────────────────────────────────
+function buildCharts(d) {
+  const enrollCtx = document.getElementById('enrollChart').getContext('2d');
+  if (enrollChart) enrollChart.destroy();
+  const termKeys = Object.keys(d.enrollment).filter(k=>k!=='labels');
+  const firstTerm = termKeys[0];
+  const initData = d.enrollment[firstTerm]?.[currentLine] || d.enrollment[firstTerm]?.All || [];
+  enrollChart = new Chart(enrollCtx, {
+    type: 'line',
+    data: {
+      labels: d.enrollment.labels,
+      datasets: [{ data: initData, borderColor: lineColors[currentLine]||'#A32638',
+        backgroundColor: 'rgba(163,38,56,0.07)', borderWidth: 2.5, tension: 0.4,
+        fill: true, pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: lineColors[currentLine]||'#A32638' }]
+    },
+    options: {
+      responsive: true, plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + ' students' } } },
+      scales: {
+        x: { grid:{display:false}, ticks:{font:{family:'DM Sans',size:11},color:'#6B7280'} },
+        y: { grid:{color:'rgba(0,0,0,0.05)'}, ticks:{font:{family:'DM Mono',size:11},color:'#6B7280'} }
+      }
+    }
+  });
+
+  const donutCtx = document.getElementById('donutChart').getContext('2d');
+  if (donutChart) donutChart.destroy();
+  donutChart = new Chart(donutCtx, {
+    type: 'doughnut',
+    data: { labels: d.donut.labels, datasets:[{ data: d.donut.data, backgroundColor: d.donut.colors, borderWidth:0, hoverOffset:4 }] },
+    options: { cutout:'68%', plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx => ' '+ctx.label+': '+ctx.raw+'%' } } } }
+  });
+  const total = d.donut.data.reduce((a,b)=>a+b,0);
+  document.getElementById('donut-total').textContent = total > 100 ? total.toLocaleString() : '1,284';
+  const pcts = d.donut.data;
+  const donutSum = pcts.reduce((a,b)=>a+b,0);
+  document.getElementById('donut-legend').innerHTML = d.donut.labels.map((l,i) =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${d.donut.colors[i]}"></div><div class="legend-name">${l}</div><div class="legend-pct">${donutSum>0?Math.round(pcts[i]/donutSum*100):pcts[i]}%</div></div>`
+  ).join('');
+}
+
+function switchLine(key, btn) {
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  currentLine = key;
+  const d = sheetData || DEMO;
+  const enrollData = d.enrollment[currentTerm] || d.enrollment[Object.keys(d.enrollment).filter(k=>k!=='labels')[0]];
+  if (enrollChart && enrollData) {
+    enrollChart.data.datasets[0].data = enrollData[key] || enrollData.All;
+    enrollChart.data.datasets[0].borderColor = lineColors[key]||'#A32638';
+    enrollChart.data.datasets[0].pointBackgroundColor = lineColors[key]||'#A32638';
+    enrollChart.update();
+  }
+}
+
+function setStatus(live, msg) {
+  document.getElementById('status-dot').className = 'status-dot' + (live?' live':'');
+  document.getElementById('status-text').textContent = msg;
+}
+</script>
+</body>
+</html>
