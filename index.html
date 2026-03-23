@@ -12,18 +12,22 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--red:#A32638;--red-dim:rgba(163,38,56,.08);--gold:#C89A3A;--green:#16A34A;--blue:#2563EB;--navy:#1A2340;--ink:#1C1C1E;--muted:#6B7280;--border:rgba(0,0,0,.07);--border2:#E5E7EB;--surface:#fff;--bg:#F4F5F7}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+
+/* Header */
 .header{background:var(--navy);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
 .header-left{display:flex;align-items:center;gap:12px}
 .logo{width:32px;height:32px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center}
 .logo span{color:#fff;font-weight:700;font-size:13px}
 .header-title{color:#fff;font-size:14px;font-weight:600}
 .header-right{display:flex;align-items:center;gap:8px}
-.source-chip{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;display:none;align-items:center;gap:4px}
+.source-chip{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;display:none;align-items:center;gap:5px}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;display:inline-block}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .hbtn{font-family:'DM Sans',sans-serif;font-size:12px;border-radius:7px;padding:6px 12px;cursor:pointer;border:none;font-weight:500}
 .hbtn-ghost{background:rgba(255,255,255,.1);color:#fff}.hbtn-ghost:hover{background:rgba(255,255,255,.18)}
 .hbtn-red{background:var(--red);color:#fff}
+
+/* Source screen */
 #source-screen{max-width:680px;margin:60px auto;padding:0 20px 60px}
 .screen-title{text-align:center;margin-bottom:32px}
 .screen-logo{width:52px;height:52px;background:var(--red);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px}
@@ -56,7 +60,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .drop-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px}
 .drop-sub{font-size:12px;color:var(--muted)}
 .file-ready{background:var(--bg);border-radius:8px;padding:10px 14px;font-size:12px;display:none;align-items:center;gap:10px;margin-bottom:12px}
-.file-ready span{flex:1;font-family:'DM Mono',monospace;color:var(--ink)}
+.file-ready span{flex:1;font-family:'DM Mono',monospace;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .info-box{background:#EFF6FF;border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
 .info-box b{color:var(--ink)}
 .warn-box{background:#FFFBEB;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
@@ -65,16 +69,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;border:none;border-radius:10px;padding:10px 22px;cursor:pointer}
 .btn-primary{background:var(--red);color:#fff}.btn-primary:hover{opacity:.88}
 .btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border2)}
-.err-box{background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:12px;color:#B91C1C;margin-top:10px;display:none;line-height:1.5}
+.err-box{background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:12px;color:#B91C1C;margin-top:10px;display:none;white-space:pre-line}
+
+/* Loading */
 .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:12px}
 .big-spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .load-text{font-size:13px;color:var(--muted)}
+
+/* Dashboard */
 #dashboard{display:none;padding:24px 28px 60px}
 .tab-nav{display:flex;flex-wrap:wrap;margin-bottom:20px;border-bottom:1px solid var(--border2)}
 .tab-nav-btn{font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 18px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
 .tab-nav-btn:hover{color:var(--ink)}
 .tab-nav-btn.active{color:var(--red);border-bottom-color:var(--red);font-weight:500}
+
+/* KPI strip */
 .kpi-strip{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
 .kpi{background:var(--surface);border-radius:12px;padding:16px 20px;border:1px solid var(--border);flex:1;min-width:130px;position:relative;overflow:hidden;transition:box-shadow .2s}
 .kpi:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
@@ -82,12 +92,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .kpi-label{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
 .kpi-value{font-size:24px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
 .kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* No-insight banner */
+.insight-banner{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:flex-start;gap:14px}
+.insight-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.insight-body{font-size:13px;color:var(--muted);line-height:1.6}
+.insight-body b{color:var(--ink);font-weight:500}
+
+/* Charts */
 .charts-grid{display:grid;gap:14px;margin-bottom:14px}
 .charts-grid.c1{grid-template-columns:1fr}
 .charts-grid.c2{grid-template-columns:1fr 1fr}
 .charts-grid.c3{grid-template-columns:2fr 1fr}
 .chart-card{background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:18px 20px}
 .chart-title{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:14px}
+
+/* Table */
 .table-card{background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden}
 .table-toolbar{padding:12px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .tbl-search{flex:1;min-width:160px;padding:7px 11px;border:1px solid var(--border2);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;outline:none;background:var(--bg)}
@@ -97,7 +117,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:500;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:2}
 thead th.r{text-align:right}
-tbody td{padding:8px 12px;border-bottom:1px solid var(--border2);white-space:nowrap;color:var(--ink);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--border2);white-space:nowrap;color:var(--ink);max-width:240px;overflow:hidden;text-overflow:ellipsis}
 tbody td.r{text-align:right;font-family:'DM Mono',monospace;color:var(--blue)}
 tbody tr:hover td{background:var(--bg)}
 tbody tr:last-child td{border-bottom:none}
@@ -107,6 +127,7 @@ tbody tr:last-child td{border-bottom:none}
 .pg-btn:hover{background:var(--bg)}
 .pg-btn.on{background:var(--red);color:#fff;border-color:var(--red)}
 .pg-btn:disabled{opacity:.35;cursor:default}
+
 @media(max-width:640px){.source-grid{grid-template-columns:1fr}.charts-grid.c2,.charts-grid.c3{grid-template-columns:1fr}#dashboard{padding:16px 14px 40px}.header{padding:0 14px}}
 </style>
 </head>
@@ -130,11 +151,12 @@ tbody tr:last-child td{border-bottom:none}
   <div class="load-text" id="load-text">Loading…</div>
 </div>
 
+<!-- SOURCE SCREEN -->
 <div id="source-screen">
   <div class="screen-title">
     <div class="screen-logo"><span>SSB</span></div>
     <div class="screen-h">Connect your data</div>
-    <div class="screen-sub">Pick where your data lives. Works with any column names or structure — no reformatting needed.<br>Everything runs in your browser. No data is sent to any server.</div>
+    <div class="screen-sub">Works with any column names or structure. The dashboard is smart enough to figure out what to show — you don't have to configure anything.</div>
   </div>
 
   <div class="source-grid" id="picker">
@@ -142,25 +164,25 @@ tbody tr:last-child td{border-bottom:none}
       <span class="source-badge badge-live">Auto-refresh</span>
       <span class="source-icon">📊</span>
       <div class="source-name">Google Sheets</div>
-      <div class="source-desc">Paste your Sheet ID. Staff update the sheet normally — dashboard refreshes automatically every 5 minutes.</div>
+      <div class="source-desc">Paste your Sheet ID. Reads all tabs. Refreshes automatically every 5 minutes as staff update the sheet.</div>
     </div>
     <div class="source-card" onclick="showPanel('excel')">
       <span class="source-badge badge-upload">Upload</span>
       <span class="source-icon">📗</span>
       <div class="source-name">Excel (.xlsx)</div>
-      <div class="source-desc">Upload any .xlsx or .xls file. All sheets become tabs. File stays on your computer — nothing is sent anywhere.</div>
+      <div class="source-desc">Upload any .xlsx file. Every sheet becomes a tab. File stays on your computer — nothing sent anywhere.</div>
     </div>
     <div class="source-card" onclick="showPanel('csv')">
       <span class="source-badge badge-upload">Upload</span>
       <span class="source-icon">📄</span>
       <div class="source-name">CSV File</div>
-      <div class="source-desc">Drop any .csv file. Works with BANNER, PeopleSoft, Google Forms, or any custom system export.</div>
+      <div class="source-desc">Drop any .csv file. Works with BANNER, PeopleSoft, Google Forms exports, or any custom system.</div>
     </div>
     <div class="source-card" onclick="showPanel('sf')">
       <span class="source-badge badge-easy">No login needed</span>
       <span class="source-icon">☁️</span>
       <div class="source-name">Salesforce</div>
-      <div class="source-desc">Export any Salesforce report as CSV and upload it here. No API keys or IT setup required.</div>
+      <div class="source-desc">Export any Salesforce report as CSV and upload it here. No API keys or IT approval required.</div>
     </div>
   </div>
 
@@ -168,14 +190,14 @@ tbody tr:last-child td{border-bottom:none}
     <button class="btn btn-secondary" onclick="loadDemo()">Try with demo data →</button>
   </div>
 
-  <!-- Google Sheets -->
+  <!-- Google Sheets panel -->
   <div class="source-panel" id="panel-gs">
     <button class="panel-back" onclick="backToPicker()">← Back</button>
     <div class="panel-h">📊 Google Sheets</div>
-    <div class="panel-sub">Reads all tabs automatically. Any column names, any structure. Stays live as staff update the sheet.</div>
+    <div class="panel-sub">Reads all tabs automatically. Works with any column structure — no setup required.</div>
     <div class="info-box">
       <b>Step 1 — Find your Sheet ID:</b><br>
-      Open your sheet → the URL shows: <code style="font-size:10px;background:#DBEAFE;padding:1px 5px;border-radius:3px">docs.google.com/spreadsheets/d/<b style="color:var(--red)">YOUR_ID</b>/edit</code><br><br>
+      URL: <code style="font-size:10px;background:#DBEAFE;padding:1px 5px;border-radius:3px">docs.google.com/spreadsheets/d/<b style="color:var(--red)">YOUR_ID</b>/edit</code><br><br>
       <b>Step 2 — Publish it:</b> File → Share → Publish to web → Entire document → CSV → Publish
     </div>
     <div class="input-label">Sheet ID</div>
@@ -186,16 +208,16 @@ tbody tr:last-child td{border-bottom:none}
     </div>
   </div>
 
-  <!-- Excel -->
+  <!-- Excel panel -->
   <div class="source-panel" id="panel-excel">
     <button class="panel-back" onclick="backToPicker()">← Back</button>
     <div class="panel-h">📗 Excel File</div>
-    <div class="panel-sub">Upload any .xlsx file. Every sheet tab loads as a dashboard tab. Your file never leaves your computer.</div>
+    <div class="panel-sub">Every sheet tab loads as a dashboard tab. Your file never leaves your computer.</div>
     <div class="dropzone" id="excel-dz" ondragover="onDrag(event,'excel-dz')" ondragleave="offDrag('excel-dz')" ondrop="onDrop(event,'excel')">
       <input type="file" accept=".xlsx,.xls" onchange="onFilePick(event,'excel')">
       <div class="drop-icon">📗</div>
       <div class="drop-title">Drop Excel file here</div>
-      <div class="drop-sub">or click to browse &nbsp;·&nbsp; .xlsx and .xls</div>
+      <div class="drop-sub">or click to browse · .xlsx and .xls</div>
     </div>
     <div class="file-ready" id="excel-ready">
       <span id="excel-fname">—</span>
@@ -204,16 +226,16 @@ tbody tr:last-child td{border-bottom:none}
     <div class="err-box" id="excel-err"></div>
   </div>
 
-  <!-- CSV -->
+  <!-- CSV panel -->
   <div class="source-panel" id="panel-csv">
     <button class="panel-back" onclick="backToPicker()">← Back</button>
     <div class="panel-h">📄 CSV File</div>
-    <div class="panel-sub">Works with any CSV — BANNER, PeopleSoft, Google Forms, custom exports. Any column headers, any structure.</div>
+    <div class="panel-sub">Works with any CSV — BANNER, PeopleSoft, Google Forms, custom exports. Any column headers.</div>
     <div class="dropzone" id="csv-dz" ondragover="onDrag(event,'csv-dz')" ondragleave="offDrag('csv-dz')" ondrop="onDrop(event,'csv')">
       <input type="file" accept=".csv,.txt" onchange="onFilePick(event,'csv')">
       <div class="drop-icon">📄</div>
       <div class="drop-title">Drop CSV file here</div>
-      <div class="drop-sub">or click to browse &nbsp;·&nbsp; .csv supported</div>
+      <div class="drop-sub">or click to browse · .csv supported</div>
     </div>
     <div class="file-ready" id="csv-ready">
       <span id="csv-fname">—</span>
@@ -222,11 +244,11 @@ tbody tr:last-child td{border-bottom:none}
     <div class="err-box" id="csv-err"></div>
   </div>
 
-  <!-- Salesforce -->
+  <!-- Salesforce panel -->
   <div class="source-panel" id="panel-sf">
     <button class="panel-back" onclick="backToPicker()">← Back</button>
     <div class="panel-h">☁️ Salesforce Report</div>
-    <div class="panel-sub">No API keys, no IT setup, no login required. Just export any report as CSV and upload it.</div>
+    <div class="panel-sub">No API keys, no IT setup, no login. Just export any report as CSV and upload it.</div>
     <div class="warn-box">
       <b>How to export from Salesforce:</b><br>
       1. Open any Report in Salesforce<br>
@@ -248,28 +270,156 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dashboard">
   <div class="tab-nav" id="tab-nav"></div>
   <div id="dash-body"></div>
 </div>
 
 <script>
-const COLORS=['#A32638','#2563EB','#C89A3A','#16A34A','#9333EA','#0891B2','#EA580C','#65A30D','#DB2777'];
-const PAGE=20;
-let allTabs={},tabNames=[],activeTab='',chartInst={},filtered={},pages={},currentSource='',gsId='',refreshTimer=null;
-let files={excel:null,csv:null,sf:null};
+// ══════════════════════════════════════════════════════════
+//  INTELLIGENCE ENGINE
+//  Classifies every column before deciding what to show
+// ══════════════════════════════════════════════════════════
 
-// ── Navigation ────────────────────────────────────────────
-function showPanel(id){
+// Columns that look numeric but are NEVER meaningful to sum/chart
+const JUNK_PATTERNS = [
+  /phone|mobile|contact.?no|contact.?num|tel|fax|cell/i,
+  /^(sr\.?\s*no|s\.?\s*no|serial\.?\s*no|seq\.?\s*no)$/i,
+  /^(roll\.?\s*no|roll\.?\s*num|enrollment\.?\s*no|reg\.?\s*no)$/i,
+  /^(id|uid|uuid|ref|code)$/i,
+  /^(timestamp|date\.?time|created|updated|modified)$/i,
+  /zip|postal|pin\.?code|area\.?code/i,
+  /passport|aadhar|pan\.?no|ssn|license/i,
+  /\bemail\b|\be-mail\b|\burl\b|\blink\b|\bwebsite\b/i,
+];
+
+// Column names that ARE meaningful counts
+const COUNT_PATTERNS = [
+  /count|total|num(ber)?\s+of|no\.\s+of|\bamt\b|amount/i,
+  /students|enrollment|enroll|headcount/i,
+  /attendance|attendees|registrations/i,
+  /applicant|application|admit|admitted|enrolled/i,
+  /revenue|income|expense|budget|fee|salary|cost/i,
+  /score|gpa|marks|grade|cgpa|sgpa/i,
+  /seats|capacity|vacancy|openings/i,
+  /credits|units|hours/i,
+  /completed|passed|failed/i,
+];
+
+// Column names that are good categorical groupers
+const CATEGORY_PATTERNS = [
+  /\byear\b|semester|term|session|batch|cohort/i,
+  /division|section|class|group/i,
+  /program|course|degree|major|stream|branch|dept|department/i,
+  /status|stage|state|phase|level|tier/i,
+  /type|category|kind|mode|format/i,
+  /gender|sex/i,
+  /campus|location|city|region|site/i,
+  /nationality|country|state/i,
+  /faculty|instructor|professor|supervisor/i,
+];
+
+// Columns to skip entirely from display
+const SKIP_DISPLAY_PATTERNS = [
+  /password|token|secret|key/i,
+  /\bip\b|mac\.?addr/i,
+];
+
+function classifyColumn(colName, values) {
+  const name = colName.trim();
+  const nonEmpty = values.filter(v => v !== '' && v != null);
+  if (!nonEmpty.length) return 'empty';
+
+  // Always skip certain columns
+  if (SKIP_DISPLAY_PATTERNS.some(p => p.test(name))) return 'skip';
+
+  // Check if values look like phone numbers (10+ digit numbers)
+  const isPhoneLike = nonEmpty.slice(0, 15).filter(v => {
+    const s = String(v).replace(/[\s\-\+\(\)]/g, '');
+    return /^\d{7,}$/.test(s);
+  }).length / Math.min(nonEmpty.length, 15) > 0.6;
+
+  // Check if name matches junk patterns
+  const isJunkName = JUNK_PATTERNS.some(p => p.test(name));
+
+  // If it's a junk name OR looks like phone → identifier, show in table only
+  if (isJunkName || isPhoneLike) return 'identifier';
+
+  // Check if values are numeric
+  const numVals = nonEmpty.map(v => parseFloat(String(v).replace(/[^0-9.\-]/g, '')));
+  const numericRatio = numVals.filter(v => !isNaN(v) && isFinite(v)).length / nonEmpty.length;
+
+  // Check uniqueness ratio
+  const uniqueVals = [...new Set(nonEmpty)];
+  const uniqueRatio = uniqueVals.length / nonEmpty.length;
+
+  // Is it a meaningful count/metric?
+  const isCountName = COUNT_PATTERNS.some(p => p.test(name));
+  // Is it a category grouper?
+  const isCatName = CATEGORY_PATTERNS.some(p => p.test(name));
+
+  if (numericRatio > 0.75) {
+    // Even if numeric, skip if values are too large (phone-like) or all unique (IDs)
+    const avg = numVals.filter(v => !isNaN(v)).reduce((a,b)=>a+b,0) / numVals.filter(v=>!isNaN(v)).length;
+    const allUnique = uniqueRatio > 0.95 && nonEmpty.length > 5;
+    const looksLikeId = allUnique && !isCountName;
+
+    if (looksLikeId) return 'identifier';
+    if (isCountName) return 'metric';
+    // Small numeric values that aren't IDs are likely metrics
+    if (avg < 100000 && !allUnique) return 'metric';
+    return 'identifier'; // large unique numbers = IDs
+  }
+
+  // Categorical: few unique values
+  if (isCatName || (uniqueVals.length <= 20 && uniqueRatio < 0.5)) return 'category';
+
+  // Date-like
+  const isDate = nonEmpty.some(v => /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(String(v)));
+  if (isDate) return 'date';
+
+  // Everything else: text/name, show in table only
+  return 'text';
+}
+
+function analyzeTab(rows) {
+  if (!rows.length) return { metrics:[], categories:[], identifiers:[], dates:[], text:[] };
+  const cols = Object.keys(rows[0]);
+  const result = { metrics:[], categories:[], identifiers:[], dates:[], text:[] };
+
+  cols.forEach(col => {
+    const vals = rows.map(r => r[col] ?? '');
+    const type = classifyColumn(col, vals);
+    if (type === 'empty' || type === 'skip') return;
+    if (result[type]) result[type].push(col);
+    else result.text.push(col);
+  });
+
+  return result;
+}
+
+// ══════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════
+const COLORS = ['#A32638','#2563EB','#C89A3A','#16A34A','#9333EA','#0891B2','#EA580C','#65A30D','#DB2777'];
+const PAGE = 20;
+let allTabs={}, tabNames=[], activeTab='', chartInst={}, filtered={}, pages={}, gsId='', refreshTimer=null;
+let pendingFiles = {excel:null, csv:null, sf:null};
+
+// ══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════════
+function showPanel(id) {
   document.getElementById('picker').style.display='none';
   document.querySelectorAll('.source-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
 }
-function backToPicker(){
+function backToPicker() {
   document.getElementById('picker').style.display='grid';
   document.querySelectorAll('.source-panel').forEach(p=>p.classList.remove('active'));
 }
-function goHome(){
+function goHome() {
   document.getElementById('dashboard').style.display='none';
   document.getElementById('source-screen').style.display='';
   backToPicker();
@@ -280,106 +430,120 @@ function goHome(){
   chartInst={};allTabs={};tabNames=[];filtered={};pages={};
 }
 
-// ── File helpers ──────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+//  FILE HELPERS
+// ══════════════════════════════════════════════════════════
 function onDrag(e,id){e.preventDefault();document.getElementById(id).classList.add('drag')}
 function offDrag(id){document.getElementById(id).classList.remove('drag')}
 function onDrop(e,type){e.preventDefault();offDrag(type+'-dz');setFile(e.dataTransfer.files[0],type)}
 function onFilePick(e,type){setFile(e.target.files[0],type)}
 function setFile(f,type){
   if(!f)return;
-  files[type]=f;
+  pendingFiles[type]=f;
   document.getElementById(type+'-fname').textContent=f.name;
   document.getElementById(type+'-ready').style.display='flex';
 }
 
-// ── Google Sheets ─────────────────────────────────────────
-async function connectGS(){
-  const id=document.getElementById('gs-id').value.trim();
+// ══════════════════════════════════════════════════════════
+//  CONNECTORS
+// ══════════════════════════════════════════════════════════
+async function connectGS() {
+  const id = document.getElementById('gs-id').value.trim();
   if(!id){showErr('gs','Please paste your Sheet ID.');return;}
-  gsId=id;hideErr('gs');
+  gsId=id; hideErr('gs');
   setLoad(true,'Connecting to Google Sheets…');
-  try{
+  try {
     await fetchGS(id);
     localStorage.setItem('ssb_gs_id',id);
-    setLoad(false);launch('Google Sheets',true);
-  }catch(e){
+    setLoad(false); launch('Google Sheets',true);
+  } catch(e) {
     setLoad(false);
-    showErr('gs','Could not connect.\n• Make sure you published the sheet: File → Share → Publish to web → CSV → Publish\n• Check the Sheet ID is correct');
+    showErr('gs','Could not connect. Make sure:\n• Sheet is published: File → Share → Publish to web → CSV → Publish\n• Sheet ID is correct (the part between /d/ and /edit in the URL)');
   }
 }
-async function fetchGS(id){
-  const res=await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json`);
-  if(!res.ok)throw new Error('Not accessible');
-  const text=await res.text();
-  const matches=[...text.matchAll(/"name":"([^"]+)"/g)];
-  let names=matches.map(m=>m[1]).filter((v,i,a)=>a.indexOf(v)===i);
-  if(!names.length)names=['Sheet1'];
-  allTabs={};tabNames=[];
+
+async function fetchGS(id) {
+  const res = await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json`);
+  if(!res.ok) throw new Error('Not accessible');
+  const text = await res.text();
+  const matches = [...text.matchAll(/"name":"([^"]+)"/g)];
+  let names = matches.map(m=>m[1]).filter((v,i,a)=>a.indexOf(v)===i);
+  if(!names.length) names=['Sheet1'];
+  allTabs={}; tabNames=[];
   const base=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=`;
   for(const name of names){
-    try{
+    try {
       const r=await fetch(base+encodeURIComponent(name));
       if(!r.ok)continue;
       const txt=await r.text();
       if(!txt.trim())continue;
       const rows=cleanRows(Papa.parse(txt.trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data);
       if(rows.length){allTabs[name]=rows;tabNames.push(name);}
-    }catch(_){}
+    } catch(_){}
   }
-  if(!tabNames.length)throw new Error('No readable data');
+  if(!tabNames.length) throw new Error('No readable data');
 }
 
-// ── Excel ─────────────────────────────────────────────────
-async function loadExcel(){
-  const f=files.excel;if(!f)return;
+async function loadExcel() {
+  const f=pendingFiles.excel; if(!f)return;
   setLoad(true,'Reading Excel file…');
-  try{
+  try {
     const buf=await f.arrayBuffer();
     const wb=XLSX.read(buf,{type:'array'});
-    allTabs={};tabNames=[];
+    allTabs={}; tabNames=[];
     wb.SheetNames.forEach(name=>{
-      const rows=cleanRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:''}));
+      const rows=cleanRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:'',raw:false}));
       if(rows.length){allTabs[name]=rows;tabNames.push(name);}
     });
     if(!tabNames.length)throw new Error('No data found');
-    setLoad(false);launch('Excel',false);
-  }catch(e){setLoad(false);showErr('excel','Could not read file: '+e.message);}
+    setLoad(false); launch('Excel',false);
+  } catch(e){setLoad(false);showErr('excel','Could not read: '+e.message);}
 }
 
-// ── CSV ───────────────────────────────────────────────────
-async function loadCSV(){
-  const f=files.csv;if(!f)return;
+async function loadCSV() {
+  const f=pendingFiles.csv; if(!f)return;
   setLoad(true,'Reading CSV…');
-  try{
+  try {
     const txt=await f.text();
     const rows=cleanRows(Papa.parse(txt.trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data);
     if(!rows.length)throw new Error('No data found');
     const name=f.name.replace(/\.csv$/i,'');
-    allTabs={[name]:rows};tabNames=[name];
-    setLoad(false);launch('CSV',false);
-  }catch(e){setLoad(false);showErr('csv','Could not read: '+e.message);}
+    allTabs={[name]:rows}; tabNames=[name];
+    setLoad(false); launch('CSV',false);
+  } catch(e){setLoad(false);showErr('csv','Could not read: '+e.message);}
 }
 
-// ── Salesforce CSV ────────────────────────────────────────
-async function loadSF(){
-  const f=files.sf;if(!f)return;
+async function loadSF() {
+  const f=pendingFiles.sf; if(!f)return;
   setLoad(true,'Reading Salesforce export…');
-  try{
+  try {
     const txt=await f.text();
-    // Strip Salesforce footer rows (Grand Totals line etc.)
-    const lines=txt.split('\n').filter(l=>!/^"?Grand Totals?/i.test(l.trim()));
+    const lines=txt.split('\n').filter(l=>!/^"?Grand Totals?/i.test(l.trim())&&l.trim());
     const rows=cleanRows(Papa.parse(lines.join('\n').trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data);
     if(!rows.length)throw new Error('No data found');
     const name=f.name.replace(/\.csv$/i,'').replace(/_/g,' ');
-    allTabs={[name]:rows};tabNames=[name];
-    setLoad(false);launch('Salesforce',false);
-  }catch(e){setLoad(false);showErr('sf','Could not read: '+e.message);}
+    allTabs={[name]:rows}; tabNames=[name];
+    setLoad(false); launch('Salesforce',false);
+  } catch(e){setLoad(false);showErr('sf','Could not read: '+e.message);}
 }
 
-// ── Demo ──────────────────────────────────────────────────
-function loadDemo(){
-  allTabs={
-    'Student Enrollment':[
+function loadDemo() {
+  allTabs = {
+    'Student Internships': [
+      {Students_Name:'Abhishek Mane',Year:'BE',Division:'A',Roll_No:'38',Contact:'8169861849',Internship_Company:'Anubhav Fabricators',Duration:'60 days'},
+      {Students_Name:'Manish Gunjal',Year:'BE',Division:'D',Roll_No:'20',Contact:'8369934527',Internship_Company:'IIT Bombay RM LAB',Duration:'3 months'},
+      {Students_Name:'Ronak Oza',Year:'BE',Division:'A',Roll_No:'45',Contact:'9167722688',Internship_Company:'Simulation Lab Pune',Duration:'2 months'},
+      {Students_Name:'Raj Sonawane',Year:'TE',Division:'B',Roll_No:'43',Contact:'7718084435',Internship_Company:'Loco shed Kalyan',Duration:'15 days'},
+      {Students_Name:'Vaibhav Gupta',Year:'BE',Division:'D',Roll_No:'24',Contact:'7718084435',Internship_Company:'IIT Bombay RM Lab',Duration:'3 months'},
+      {Students_Name:'Chetan Inamdar',Year:'BE',Division:'D',Roll_No:'25',Contact:'9653356902',Internship_Company:'RM Lab IIT Bombay',Duration:'3 months'},
+      {Students_Name:'Swapnil Vagal',Year:'TE',Division:'B',Roll_No:'42',Contact:'9503062294',Internship_Company:'Denfab Engineering',Duration:'7 days'},
+      {Students_Name:'Varun Chauhan',Year:'TE',Division:'A',Roll_No:'12',Contact:'9324988057',Internship_Company:'Rienvent Technologies',Duration:'1 month'},
+      {Students_Name:'Zeeshan Shaikh',Year:'BE',Division:'D',Roll_No:'37',Contact:'9768684441',Internship_Company:'Tata Steel',Duration:'15 days'},
+      {Students_Name:'Rahul Pingale',Year:'BE',Division:'A',Roll_No:'50',Contact:'9309542225',Internship_Company:'Royal Enfield Mumbai',Duration:'45 days'},
+      {Students_Name:'Archana Bandgar',Year:'TE',Division:'A',Roll_No:'3',Contact:'8805491342',Internship_Company:'Electromech CPL',Duration:'15 days'},
+      {Students_Name:'Sourabh Chalke',Year:'BE',Division:'A',Roll_No:'11',Contact:'9702269578',Internship_Company:'Diesel Loco Shed Kalyan',Duration:'1 month'},
+    ],
+    'Enrollment': [
       {Term:'Spring 2025',Program:'BAIS',Students:'398',Division:'Graduate'},
       {Term:'Spring 2025',Program:'MBA',Students:'347',Division:'Graduate'},
       {Term:'Spring 2025',Program:'MS Finance',Students:'282',Division:'Graduate'},
@@ -389,223 +553,328 @@ function loadDemo(){
       {Term:'Fall 2024',Program:'MS Finance',Students:'265',Division:'Graduate'},
       {Term:'Fall 2024',Program:'MS Management',Students:'152',Division:'Graduate'},
     ],
-    'Events & Webinars':[
-      {EventName:'MBA Info Session',Date:'Mar 28',Type:'Webinar',Attendance:'',Status:'Upcoming'},
-      {EventName:'BAIS Career Panel',Date:'Mar 15',Type:'In-Person',Attendance:'142',Status:'Done'},
-      {EventName:'Finance Networking Night',Date:'Mar 8',Type:'In-Person',Attendance:'98',Status:'Done'},
-      {EventName:'Admissions Webinar',Date:'Feb 27',Type:'Webinar',Attendance:'211',Status:'Done'},
-      {EventName:'Research Symposium',Date:'Feb 20',Type:'In-Person',Attendance:'87',Status:'Done'},
-    ],
-    'Application Pipeline':[
-      {Term:'Spring 2025',Stage:'Submitted',Count:'347'},
-      {Term:'Spring 2025',Stage:'Under Review',Count:'250'},
-      {Term:'Spring 2025',Stage:'Interviewed',Count:'166'},
-      {Term:'Spring 2025',Stage:'Admitted',Count:'112'},
-      {Term:'Spring 2025',Stage:'Enrolled',Count:'68'},
-    ],
-    'Faculty & Staff':[
-      {Name:'Dr. Sarah Chen',Role:'Program Director',Department:'BAIS',Status:'Active'},
-      {Name:'Prof. James Miller',Role:'Associate Professor',Department:'Finance',Status:'Active'},
-      {Name:'Dr. Priya Sharma',Role:'Assistant Professor',Department:'MBA',Status:'Active'},
-      {Name:'Maria Torres',Role:'Admin Coordinator',Department:'Dean Office',Status:'Active'},
+    'Events': [
+      {Event:'MBA Info Session',Date:'Mar 28',Type:'Webinar',Attendance:'',Status:'Upcoming'},
+      {Event:'BAIS Career Panel',Date:'Mar 15',Type:'In-Person',Attendance:'142',Status:'Done'},
+      {Event:'Finance Night',Date:'Mar 8',Type:'In-Person',Attendance:'98',Status:'Done'},
+      {Event:'Admissions Webinar',Date:'Feb 27',Type:'Webinar',Attendance:'211',Status:'Done'},
+      {Event:'Research Symposium',Date:'Feb 20',Type:'In-Person',Attendance:'87',Status:'Done'},
     ]
   };
   tabNames=Object.keys(allTabs);
   launch('Demo',false);
 }
 
-// ── Launch dashboard ──────────────────────────────────────
-function launch(src,canRefresh){
-  currentSource=src;
+// ══════════════════════════════════════════════════════════
+//  LAUNCH DASHBOARD
+// ══════════════════════════════════════════════════════════
+function launch(src, canRefresh) {
   document.getElementById('source-screen').style.display='none';
   document.getElementById('dashboard').style.display='block';
   document.getElementById('change-btn').style.display='';
   document.getElementById('export-btn').style.display='';
-  const chipMap={'Google Sheets':'#DCFCE7;color:#16A34A','Excel':'#DBEAFE;color:#1D4ED8','CSV':'#F3F4F6;color:#374151','Salesforce':'#EDE9FE;color:#6D28D9','Demo':'#FEF3C7;color:#92400E'};
-  const chip=document.getElementById('source-chip');
-  chip.style.cssText=`display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;background:${chipMap[src]||'#F3F4F6;color:#374151'}`;
-  chip.innerHTML=`<span class="live-dot" style="${canRefresh?'':'background:var(--gold)'}"></span>${src}`;
-  if(canRefresh){
+
+  const chipStyles = {
+    'Google Sheets':'background:#DCFCE7;color:#16A34A',
+    'Excel':'background:#DBEAFE;color:#1D4ED8',
+    'CSV':'background:#F3F4F6;color:#374151',
+    'Salesforce':'background:#EDE9FE;color:#6D28D9',
+    'Demo':'background:#FEF3C7;color:#92400E'
+  };
+  const chip = document.getElementById('source-chip');
+  chip.style.cssText = `display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;${chipStyles[src]||chipStyles['CSV']}`;
+  chip.innerHTML = `<span class="live-dot" style="${canRefresh?'':'background:var(--gold)'}"></span>${src}`;
+
+  if(canRefresh) {
     document.getElementById('refresh-btn').style.display='';
-    if(refreshTimer)clearInterval(refreshTimer);
-    refreshTimer=setInterval(()=>refreshCurrent(),5*60*1000);
+    if(refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(()=>refreshCurrent(), 5*60*1000);
   }
-  filtered={};pages={};
-  tabNames.forEach(t=>{filtered[t]=allTabs[t];pages[t]=1;});
-  document.getElementById('tab-nav').innerHTML=tabNames.map((n,i)=>
+
+  filtered={}; pages={};
+  tabNames.forEach(t=>{filtered[t]=allTabs[t]; pages[t]=1;});
+
+  document.getElementById('tab-nav').innerHTML = tabNames.map((n,i)=>
     `<button class="tab-nav-btn${i===0?' active':''}" onclick="switchTab('${esc(n)}',this)">${n}</button>`
   ).join('');
-  activeTab=tabNames[0];
+  activeTab = tabNames[0];
   renderTab(activeTab);
 }
 
-async function refreshCurrent(){
-  if(currentSource!=='Google Sheets'||!gsId)return;
+async function refreshCurrent() {
+  if(!gsId) return;
   setLoad(true,'Refreshing…');
-  try{
-    await fetchGS(gsId);filtered={};pages={};
+  try {
+    await fetchGS(gsId);
+    filtered={}; pages={};
     tabNames.forEach(t=>{filtered[t]=allTabs[t];pages[t]=1;});
     document.getElementById('tab-nav').innerHTML=tabNames.map((n,i)=>
       `<button class="tab-nav-btn${n===activeTab?' active':''}" onclick="switchTab('${esc(n)}',this)">${n}</button>`
     ).join('');
     renderTab(activeTab);
-  }catch(_){}
+  } catch(_){}
   setLoad(false);
 }
 
-// ── Tab render ────────────────────────────────────────────
-function switchTab(name,btn){
+// ══════════════════════════════════════════════════════════
+//  TAB RENDERING
+// ══════════════════════════════════════════════════════════
+function switchTab(name, btn) {
   document.querySelectorAll('.tab-nav-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');activeTab=name;
-  Object.values(chartInst).forEach(c=>{try{c.destroy()}catch(_){}});chartInst={};
+  btn.classList.add('active');
+  activeTab=name;
+  Object.values(chartInst).forEach(c=>{try{c.destroy()}catch(_){}});
+  chartInst={};
   renderTab(name);
 }
 
-function renderTab(name){
-  const rows=allTabs[name]||[];
-  const body=document.getElementById('dash-body');
+function renderTab(name) {
+  const rows = allTabs[name]||[];
+  const body = document.getElementById('dash-body');
   if(!rows.length){body.innerHTML='<div style="text-align:center;padding:60px;color:var(--muted)">No data in this tab</div>';return;}
-  const cols=Object.keys(rows[0]);
-  const ana=analyze(cols,rows);
-  body.innerHTML=`
-    ${ana.numeric.length?'<div class="kpi-strip" id="kpi-strip"></div>':''}
-    <div class="charts-grid" id="cg"></div>
-    <div class="table-card">
-      <div class="table-toolbar">
-        <input class="tbl-search" placeholder="Search ${name}…" oninput="doSearch(this.value,'${esc(name)}')">
-        <span class="tbl-meta" id="tbl-meta"></span>
-      </div>
-      <div class="tbl-wrap" id="tbl-wrap"></div>
-      <div class="tbl-footer"><span id="pg-info"></span><div class="pg-btns" id="pg-btns"></div></div>
+
+  const cols = Object.keys(rows[0]);
+  const ana = analyzeTab(rows);
+
+  let html = '';
+
+  // KPI strip — only real metrics
+  if(ana.metrics.length) html += '<div class="kpi-strip" id="kpi-strip"></div>';
+
+  // If no metrics, show a gentle explanation
+  if(!ana.metrics.length && !ana.categories.length) {
+    html += `<div class="insight-banner"><div class="insight-icon">ℹ️</div><div class="insight-body">
+      <b>This tab contains text and identifier data</b> — names, contact info, IDs — so no charts or totals are shown (they wouldn't be meaningful).
+      The full table is below with search and filtering.
+    </div></div>`;
+  }
+
+  // Charts section
+  if(ana.metrics.length || ana.categories.length) html += '<div class="charts-grid" id="cg"></div>';
+
+  // Table
+  html += `<div class="table-card">
+    <div class="table-toolbar">
+      <input class="tbl-search" placeholder="Search ${name}…" oninput="doSearch(this.value,'${esc(name)}')">
+      <span class="tbl-meta" id="tbl-meta"></span>
+    </div>
+    <div class="tbl-wrap" id="tbl-wrap"></div>
+    <div class="tbl-footer"><span id="pg-info"></span><div class="pg-btns" id="pg-btns"></div></div>
+  </div>`;
+
+  body.innerHTML = html;
+
+  if(ana.metrics.length) buildKPIs(ana, rows);
+  if(ana.metrics.length || ana.categories.length) buildCharts(ana, rows, name);
+  renderTable(rows, cols, name, 1);
+}
+
+// ══════════════════════════════════════════════════════════
+//  KPI CARDS  — only real metrics
+// ══════════════════════════════════════════════════════════
+function buildKPIs(ana, rows) {
+  const w = document.getElementById('kpi-strip'); if(!w) return;
+  w.innerHTML = ana.metrics.slice(0,5).map((col, i) => {
+    const vals = rows.map(r=>parseFloat(String(r[col]).replace(/[^0-9.\-]/g,''))).filter(v=>!isNaN(v)&&isFinite(v));
+    if(!vals.length) return '';
+    const total = vals.reduce((a,b)=>a+b,0);
+    const isRate = /rate|%|avg|ratio|gpa|cgpa|score/i.test(col);
+    const display = isRate ? (total/vals.length).toFixed(1)+(col.includes('%')?'%':'') : total.toLocaleString();
+    const sub = isRate ? `avg across ${vals.length} records` : `total · ${vals.length} records`;
+    return `<div class="kpi">
+      <div class="kpi-accent" style="background:${COLORS[i%COLORS.length]}"></div>
+      <div class="kpi-label">${col}</div>
+      <div class="kpi-value">${display}</div>
+      <div class="kpi-sub">${sub}</div>
     </div>`;
-  if(ana.numeric.length)buildKPIs(ana,rows);
-  buildCharts(ana,rows,name);
-  renderTable(rows,cols,name,1);
-}
-
-// ── Analysis ──────────────────────────────────────────────
-function analyze(cols,rows){
-  const numeric=[],categorical=[],date=[],text=[];
-  cols.forEach(col=>{
-    const vals=rows.map(r=>r[col]).filter(v=>v!==''&&v!=null);
-    if(!vals.length)return;
-    const numR=vals.map(v=>parseFloat(String(v).replace(/[^0-9.\-]/g,''))).filter(v=>!isNaN(v)&&isFinite(v)).length/vals.length;
-    const uniq=[...new Set(vals)];
-    const isDate=vals.some(v=>/\d{1,2}[\/\-]\d{2,4}|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(String(v)));
-    if(isDate)date.push(col);
-    else if(numR>0.75)numeric.push(col);
-    else if(uniq.length<=20&&uniq.length/vals.length<0.6)categorical.push(col);
-    else text.push(col);
-  });
-  return{numeric,categorical,date,text};
-}
-
-// ── KPIs ──────────────────────────────────────────────────
-function buildKPIs(ana,rows){
-  const w=document.getElementById('kpi-strip');if(!w)return;
-  w.innerHTML=ana.numeric.slice(0,5).map((col,i)=>{
-    const vals=rows.map(r=>parseFloat(String(r[col]).replace(/[^0-9.\-]/g,''))).filter(v=>!isNaN(v)&&isFinite(v));
-    const total=vals.reduce((a,b)=>a+b,0);
-    const isRate=/rate|%|avg|ratio/i.test(col);
-    const display=isRate?(total/vals.length).toFixed(1)+'%':total.toLocaleString();
-    return`<div class="kpi"><div class="kpi-accent" style="background:${COLORS[i%COLORS.length]}"></div><div class="kpi-label">${col}</div><div class="kpi-value">${display}</div><div class="kpi-sub">${isRate?'avg':'total'} · ${vals.length} records</div></div>`;
   }).join('');
 }
 
-// ── Charts ────────────────────────────────────────────────
-function buildCharts(ana,rows,tab){
-  const grid=document.getElementById('cg');if(!grid)return;
-  const defs=[];
-  if(ana.categorical.length&&ana.numeric.length){
-    const cat=ana.categorical[0],num=ana.numeric[0];
+// ══════════════════════════════════════════════════════════
+//  CHARTS  — smart selection based on what makes sense
+// ══════════════════════════════════════════════════════════
+function buildCharts(ana, rows, tab) {
+  const grid = document.getElementById('cg'); if(!grid) return;
+  const defs = [];
+
+  // Only chart if we have something meaningful to group by
+  const catCols = ana.categories;
+  const metCols = ana.metrics;
+
+  if(catCols.length && metCols.length) {
+    // Bar: primary metric grouped by primary category
+    const cat=catCols[0], met=metCols[0];
     const g={};
-    rows.forEach(r=>{const k=r[cat]||'Other';g[k]=(g[k]||0)+(parseFloat(String(r[num]).replace(/[^0-9.\-]/g,''))||0);});
-    const lbl=Object.keys(g);
-    if(lbl.length>1)defs.push({title:`${num} by ${cat}`,type:'bar',labels:lbl,data:lbl.map(l=>g[l]),ci:0});
-  }
-  if(ana.categorical.length&&ana.numeric.length){
-    const cat=ana.categorical[Math.min(1,ana.categorical.length-1)],num=ana.numeric[0];
+    rows.forEach(r=>{
+      const k=r[cat]||'Other';
+      const v=parseFloat(String(r[met]).replace(/[^0-9.\-]/g,''));
+      if(!isNaN(v))g[k]=(g[k]||0)+v;
+    });
+    const lbl=Object.keys(g).filter(k=>k&&k!=='Other'||g[k]);
+    if(lbl.length>1) defs.push({title:`${met} by ${cat}`,type:'bar',labels:lbl,data:lbl.map(l=>g[l]),ci:0});
+
+    // Donut: if second category exists, show distribution
+    if(catCols.length>=2) {
+      const cat2=catCols[1];
+      const g2={};
+      rows.forEach(r=>{
+        const k=r[cat2]||'Other';
+        const v=parseFloat(String(r[met]).replace(/[^0-9.\-]/g,''));
+        if(!isNaN(v))g2[k]=(g2[k]||0)+v;
+      });
+      const lbl2=Object.keys(g2);
+      if(lbl2.length>1&&lbl2.length<=12)
+        defs.push({title:`${met} by ${cat2}`,type:'doughnut',labels:lbl2,data:lbl2.map(l=>g2[l]),ci:1});
+    } else if(lbl.length<=8) {
+      // Reuse same data as donut for visual variety
+      defs.push({title:`Distribution`,type:'doughnut',labels:lbl,data:lbl.map(l=>g[l]),ci:1});
+    }
+
+    // Second metric bar if available
+    if(metCols.length>=2) {
+      const met2=metCols[1];
+      const g3={};
+      rows.forEach(r=>{
+        const k=r[cat]||'Other';
+        const v=parseFloat(String(r[met2]).replace(/[^0-9.\-]/g,''));
+        if(!isNaN(v))g3[k]=(g3[k]||0)+v;
+      });
+      const lbl3=Object.keys(g3).filter(k=>g3[k]);
+      if(lbl3.length>1&&lbl3.some(l=>g3[l]>0))
+        defs.push({title:`${met2} by ${cat}`,type:'bar',labels:lbl3,data:lbl3.map(l=>g3[l]),ci:2});
+    }
+  } else if(catCols.length && !metCols.length) {
+    // Only categories — show count distribution
+    const cat=catCols[0];
     const g={};
-    rows.forEach(r=>{const k=r[cat]||'Other';g[k]=(g[k]||0)+(parseFloat(String(r[num]).replace(/[^0-9.\-]/g,''))||0);});
+    rows.forEach(r=>{const k=r[cat]||'Other';g[k]=(g[k]||0)+1;});
     const lbl=Object.keys(g);
-    if(lbl.length>1&&lbl.length<=12&&(defs.length===0||cat!==ana.categorical[0]))
-      defs.push({title:`${num} breakdown`,type:'doughnut',labels:lbl,data:lbl.map(l=>g[l]),ci:1});
+    if(lbl.length>1&&lbl.length<=15) {
+      defs.push({title:`Records by ${cat}`,type:'bar',labels:lbl,data:lbl.map(l=>g[l]),ci:0});
+      if(lbl.length<=10) defs.push({title:`Distribution by ${cat}`,type:'doughnut',labels:lbl,data:lbl.map(l=>g[l]),ci:1});
+    }
   }
-  if(!defs.length){grid.style.display='none';return;}
-  grid.className=`charts-grid ${defs.length===1?'c1':defs.length===2?'c2':'c3'}`;
+
+  if(!defs.length){if(grid)grid.style.display='none';return;}
+
+  const cls = defs.length===1?'c1':defs.length===2?'c2':'c3';
+  grid.className=`charts-grid ${cls}`;
   grid.innerHTML=defs.map((_,i)=>`<div class="chart-card"><div class="chart-title" id="ct${i}"></div><canvas id="cv${i}" style="max-height:220px"></canvas></div>`).join('');
+
   defs.forEach((d,i)=>{
     document.getElementById('ct'+i).textContent=d.title;
     const ctx=document.getElementById('cv'+i).getContext('2d');
     const col=COLORS[d.ci%COLORS.length];
     chartInst['c'+i]=new Chart(ctx,{
       type:d.type,
-      data:{labels:d.labels,datasets:[{data:d.data,
+      data:{labels:d.labels,datasets:[{
+        data:d.data,
         backgroundColor:d.type==='doughnut'?COLORS.slice(0,d.labels.length):col+'CC',
         borderColor:d.type==='doughnut'?undefined:col,
-        borderWidth:d.type==='doughnut'?0:1.5,borderRadius:d.type==='bar'?5:0,hoverOffset:4}]},
-      options:{responsive:true,plugins:{
-        legend:{display:d.type==='doughnut',position:'bottom',labels:{font:{family:'DM Sans',size:10},color:'#6B7280',boxWidth:10,padding:8}},
-        tooltip:{callbacks:{label:c=>' '+c.label+': '+Number(c.raw).toLocaleString()}}
-      },
-      scales:d.type==='bar'?{
-        x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},color:'#6B7280',maxRotation:35,maxTicksLimit:10}},
-        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'DM Mono',size:10},color:'#6B7280'}}
-      }:undefined,
-      cutout:d.type==='doughnut'?'60%':undefined}
+        borderWidth:d.type==='doughnut'?0:1.5,
+        borderRadius:d.type==='bar'?5:0,
+        hoverOffset:4
+      }]},
+      options:{
+        responsive:true,
+        plugins:{
+          legend:{display:d.type==='doughnut',position:'bottom',labels:{font:{family:'DM Sans',size:10},color:'#6B7280',boxWidth:10,padding:8}},
+          tooltip:{callbacks:{label:c=>' '+c.label+': '+Number(c.raw).toLocaleString()}}
+        },
+        scales:d.type==='bar'?{
+          x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},color:'#6B7280',maxRotation:35,maxTicksLimit:10}},
+          y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'DM Mono',size:10},color:'#6B7280',beginAtZero:true}}
+        }:undefined,
+        cutout:d.type==='doughnut'?'60%':undefined
+      }
     });
   });
 }
 
-// ── Table ─────────────────────────────────────────────────
-function renderTable(rows,cols,tab,page){
-  const data=filtered[tab]||rows;
-  const total=data.length;
-  const totalPg=Math.max(1,Math.ceil(total/PAGE));
-  page=Math.min(Math.max(1,page),totalPg);
+// ══════════════════════════════════════════════════════════
+//  TABLE — full data, searchable, paginated
+// ══════════════════════════════════════════════════════════
+function renderTable(rows, cols, tab, page) {
+  const data = filtered[tab]||rows;
+  const total = data.length;
+  const totalPg = Math.max(1,Math.ceil(total/PAGE));
+  page = Math.min(Math.max(1,page),totalPg);
   pages[tab]=page;
-  const numCols=new Set();
+
+  // Detect which cols are numeric for right-align
+  const numCols = new Set();
   cols.forEach(col=>{
     const s=rows.slice(0,10).map(r=>r[col]).filter(v=>v!=='');
-    if(s.filter(v=>!isNaN(parseFloat(String(v).replace(/[^0-9.\-]/g,'')))).length>s.length*.6)numCols.add(col);
+    if(s.filter(v=>!isNaN(parseFloat(String(v).replace(/[^0-9.\-]/g,'')))).length>s.length*.7) numCols.add(col);
   });
-  const slice=data.slice((page-1)*PAGE,page*PAGE);
+  // But never right-align junk columns
+  [...numCols].forEach(col=>{
+    if(JUNK_PATTERNS.some(p=>p.test(col))||classifyColumn(col,rows.map(r=>r[col]))!=='metric') numCols.delete(col);
+  });
+
+  const slice=data.slice((page-1)*PAGE, page*PAGE);
   const w=document.getElementById('tbl-wrap');
-  if(w)w.innerHTML=`<table><thead><tr>${cols.map(c=>`<th class="${numCols.has(c)?'r':''}">${c}</th>`).join('')}</tr></thead><tbody>${slice.map(r=>`<tr>${cols.map(c=>`<td class="${numCols.has(c)?'r':''}">${r[c]??''}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-  const m=document.getElementById('tbl-meta');if(m)m.textContent=`${total} rows · ${cols.length} cols`;
-  const pi=document.getElementById('pg-info');if(pi)pi.textContent=`${(page-1)*PAGE+1}–${Math.min(page*PAGE,total)} of ${total}`;
-  const pb=document.getElementById('pg-btns');
-  if(!pb)return;
+  if(w) w.innerHTML=`<table>
+    <thead><tr>${cols.map(c=>`<th class="${numCols.has(c)?'r':''}">${c}</th>`).join('')}</tr></thead>
+    <tbody>${slice.map(r=>`<tr>${cols.map(c=>`<td class="${numCols.has(c)?'r':''}">${r[c]??''}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table>`;
+
+  const m=document.getElementById('tbl-meta'); if(m)m.textContent=`${total} rows · ${cols.length} columns`;
+  const pi=document.getElementById('pg-info'); if(pi)pi.textContent=`${(page-1)*PAGE+1}–${Math.min(page*PAGE,total)} of ${total}`;
+
+  const pb=document.getElementById('pg-btns'); if(!pb)return;
   let btns='';
-  const show=totalPg<=7?Array.from({length:totalPg},(_,i)=>i+1):
-    page<=3?[1,2,3,4,5,null,totalPg]:
-    page>=totalPg-2?[1,null,totalPg-4,totalPg-3,totalPg-2,totalPg-1,totalPg]:
-    [1,null,page-1,page,page+1,null,totalPg];
+  const show = totalPg<=7
+    ? Array.from({length:totalPg},(_,i)=>i+1)
+    : page<=3?[1,2,3,4,5,null,totalPg]
+    : page>=totalPg-2?[1,null,totalPg-4,totalPg-3,totalPg-2,totalPg-1,totalPg]
+    : [1,null,page-1,page,page+1,null,totalPg];
   show.forEach(p=>{
-    if(p===null)btns+=`<button class="pg-btn" disabled>…</button>`;
+    if(p===null) btns+=`<button class="pg-btn" disabled>…</button>`;
     else btns+=`<button class="pg-btn${p===page?' on':''}" onclick="goPage(${p},'${esc(tab)}')">${p}</button>`;
   });
   pb.innerHTML=btns;
 }
-function goPage(p,tab){pages[tab]=p;renderTable(allTabs[tab],Object.keys((allTabs[tab]||[{}])[0]||{}),tab,p);}
-function doSearch(q,tab){
-  const rows=allTabs[tab]||[];
-  filtered[tab]=q.trim()?rows.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(q.toLowerCase()))):rows;
-  pages[tab]=1;renderTable(rows,Object.keys(rows[0]||{}),tab,1);
+
+function goPage(p,tab){
+  pages[tab]=p;
+  renderTable(allTabs[tab],Object.keys((allTabs[tab]||[{}])[0]||{}),tab,p);
 }
 
-// ── Helpers ───────────────────────────────────────────────
-function cleanRows(rows){return rows.map(r=>{const c={};Object.entries(r).forEach(([k,v])=>{if(k&&k.trim())c[k.trim()]=String(v??'').trim();});return c;}).filter(r=>Object.values(r).some(v=>v!==''));}
-function esc(s){return s.replace(/'/g,"\\'")}
+function doSearch(q,tab){
+  const rows=allTabs[tab]||[];
+  filtered[tab]=q.trim()
+    ?rows.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(q.toLowerCase())))
+    :rows;
+  pages[tab]=1;
+  renderTable(rows,Object.keys(rows[0]||{}),tab,1);
+}
+
+// ══════════════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════════════
+function cleanRows(rows){
+  return rows
+    .map(r=>{
+      const c={};
+      Object.entries(r).forEach(([k,v])=>{if(k&&k.trim())c[k.trim()]=String(v??'').trim();});
+      return c;
+    })
+    .filter(r=>Object.values(r).some(v=>v!==''));
+}
+function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
 function setLoad(on,msg=''){document.getElementById('loading').style.display=on?'flex':'none';if(msg)document.getElementById('load-text').textContent=msg;}
 function showErr(src,msg){const e=document.getElementById(src+'-err');e.style.display='block';e.textContent=msg;}
 function hideErr(src){document.getElementById(src+'-err').style.display='none';}
 
-// ── Auto-restore Google Sheets ────────────────────────────
-window.addEventListener('DOMContentLoaded',async()=>{
+// ══════════════════════════════════════════════════════════
+//  AUTO-RESTORE
+// ══════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async()=>{
   const saved=localStorage.getItem('ssb_gs_id');
   if(saved){
-    document.getElementById('gs-id').value=saved;gsId=saved;
+    document.getElementById('gs-id').value=saved;
+    gsId=saved;
     setLoad(true,'Restoring your sheet…');
     try{await fetchGS(saved);setLoad(false);launch('Google Sheets',true);}
     catch(_){setLoad(false);}
