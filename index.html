@@ -358,7 +358,7 @@ function classifyCol(colName, rows){
 }
 
 function analyzeTab(rows){
-  const out={metrics:[],categories:[],identifiers:[],dates:[],text:[]};
+  const out={metric:[],category:[],identifier:[],date:[],text:[]};
   if(!rows||!rows.length)return out;
   const cols=Object.keys(rows[0]||{});
   for(const col of cols){
@@ -577,16 +577,16 @@ function renderTab(name){
   const ana=analyzeTab(rows);
 
   let html='';
-  if(ana.metrics.length)html+='<div class="krow" id="krow"></div>';
-  if(!ana.metrics.length&&!ana.categories.length){
+  if(ana.metric.length)html+='<div class="krow" id="krow"></div>';
+  if(!ana.metric.length&&!ana.category.length){
     html+='<div class="notice"><span>ℹ️</span><div><b>This tab contains text or identifier data</b> — names, IDs, contact info. No charts needed. Full searchable table below.</div></div>';
   }
-  if(ana.metrics.length||ana.categories.length)html+='<div class="cgrid" id="cgrid"></div>';
+  if(ana.metric.length||ana.category.length)html+='<div class="cgrid" id="cgrid"></div>';
   html+='<div class="tcard"><div class="ttbar"><input class="tsrch" placeholder="Search '+escH(name)+'…" oninput="doSearch(this.value,'+JSON.stringify(name)+')"><span class="tmeta" id="tmeta"></span></div><div class="twrap" id="twrap"></div><div class="tfoot"><span id="pginfo"></span><div class="pgrow" id="pgrow"></div></div></div>';
   body.innerHTML=html;
 
-  try{if(ana.metrics.length)buildKPIs(ana.metrics,rows);}catch(_){}
-  try{if(ana.metrics.length||ana.categories.length)buildCharts(ana,rows,name);}catch(_){}
+  try{if(ana.metric.length)buildKPIs(ana.metric,rows);}catch(_){}
+  try{if(ana.metric.length||ana.category.length)buildCharts(ana,rows,name);}catch(_){}
   renderTable(name,1);
 }
 
@@ -630,7 +630,7 @@ function countBy(rows,cat){
 function buildCharts(ana,rows,tab){
   const grid=document.getElementById('cgrid');if(!grid)return;
   const defs=[];
-  const cats=ana.categories,mets=ana.metrics;
+  const cats=ana.category,mets=ana.metric;
   try{
     if(cats.length&&mets.length){
       const g1=groupBy(rows,cats[0],mets[0]);
@@ -697,7 +697,7 @@ function renderTable(tabName,page){
     const cols=Object.keys((allRows[0])||{});
     if(!cols.length)return;
     const ana=analyzeTab(allRows);
-    const metSet=new Set(ana.metrics);
+    const metSet=new Set(ana.metric);
     const total=rows.length;
     const totPg=Math.max(1,Math.ceil(total/PGSZ));
     page=Math.min(Math.max(1,page||1),totPg);
