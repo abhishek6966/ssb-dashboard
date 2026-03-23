@@ -328,36 +328,17 @@ function cleanRows(raw){
 //  GOOGLE SHEETS — proper tab discovery via Feeds API
 // ══════════════════════════════════════════════════════════
 async function getSheetNames(id){
-  // Method 1: Sheets Feeds API (most reliable — returns actual tab names)
+  // Google Sheets Feeds API returns the real worksheet tab names
   try{
-    const r=await fetch(`https://spreadsheets.google.com/feeds/worksheets/${id}/public/basic?alt=json`);
+    const r=await fetch('https://spreadsheets.google.com/feeds/worksheets/'+id+'/public/basic?alt=json');
     if(r.ok){
       const d=await r.json();
-      const names=(d.feed?.entry||[]).map(e=>e.title?.$t).filter(Boolean);
-      if(names.length){console.log('Feeds API found:',names);return names;}
+      const entries=d.feed&&d.feed.entry?d.feed.entry:[];
+      const names=entries.map(function(e){return e.title&&e.title.$t?e.title.$t:'';}).filter(Boolean);
+      if(names.length){console.log('Sheet tabs found:',names);return names;}
     }
-  }catch(e){console.log('Feeds API failed:',e);}
-
-  // Method 2: Try fetching by GID (0,1,2,3...)
-  const found=[];
-  for(let gid=0;gid<10;gid++){
-    try{
-      const r=await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`);
-      if(!r.ok)break;
-      const txt=await r.text();
-      if(txt.trim()&&txt.length>10){
-        // get the actual sheet name for this gid
-        const meta=await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&gid=${gid}`);
-        if(meta.ok){
-          const mtxt=await meta.text();
-          const nm=mtxt.match(/"name"\s*:\s*"([^"]+)"/);
-          found.push(nm?nm[1]:`Sheet${gid+1}`);
-        }else found.push(`Sheet${gid+1}`);
-      }
-    }catch(_){break;}
-  }
-  if(found.length){console.log('GID scan found:',found);return found;}
-
+  }catch(e){console.warn('Feeds API failed:',e.message);}
+  // Last resort: return Sheet1 only
   return['Sheet1'];
 }
 
@@ -374,34 +355,40 @@ async function fetchGS(id){
   load(true,'Discovering sheet tabs…');
   const names=await getSheetNames(id);
   S.tabs={};S.names=[];
-  const base=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=`;
-  for(const name of names){
+
+  // Try fetching each sheet by name first, then by GID as fallback
+  for(let i=0;i<names.length;i++){
+    const name=names[i];
+    let loaded=false;
+
+    // Try by sheet name (works when Feeds API gave real names)
     try{
-      load(true,`Reading: ${name}…`);
-      const r=await fetch(base+encodeURIComponent(name));
-      if(!r.ok)continue;
-      const raw=await r.text();
-      if(!raw.trim()||raw.trim().length<10)continue;
-      const rows=cleanRows(Papa.parse(raw.trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
-      if(rows.length){S.tabs[name]=rows;S.names.push(name);}
-    }catch(_){}
-  }
-  // Also try by GID if name-based fetch missed some
-  if(S.names.length<names.length){
-    for(let gid=0;gid<names.length;gid++){
-      const name=names[gid];
-      if(S.tabs[name])continue;
-      try{
-        const r=await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`);
-        if(!r.ok)continue;
+      load(true,'Reading: '+name+'…');
+      const r=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(name));
+      if(r.ok){
         const raw=await r.text();
-        if(!raw.trim())continue;
-        const rows=cleanRows(Papa.parse(raw.trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
-        if(rows.length){S.tabs[name]=rows;if(!S.names.includes(name))S.names.push(name);}
+        if(raw.trim()&&raw.trim().length>5){
+          const rows=cleanRows(Papa.parse(raw.trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
+          if(rows.length){S.tabs[name]=rows;S.names.push(name);loaded=true;}
+        }
+      }
+    }catch(_){}
+
+    // Fallback: try by GID index (used when names are Sheet1,Sheet2,etc from GID scan)
+    if(!loaded){
+      try{
+        const r=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv&gid='+i);
+        if(r.ok){
+          const raw=await r.text();
+          if(raw.trim()&&raw.trim().length>5){
+            const rows=cleanRows(Papa.parse(raw.trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
+            if(rows.length){S.tabs[name]=rows;S.names.push(name);}
+          }
+        }
       }catch(_){}
     }
   }
-  if(!S.names.length)throw new Error('No readable data found');
+  if(!S.names.length)throw new Error('No readable data found. Make sure the sheet is published: File → Share → Publish to web → Entire Document → CSV → Publish');
 }
 
 // ── Excel ─────────────────────────────────────────────────
