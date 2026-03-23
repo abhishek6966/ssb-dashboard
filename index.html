@@ -10,548 +10,477 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --red:#A32638;--red-dim:rgba(163,38,56,.08);
-  --gold:#C89A3A;--green:#16A34A;--blue:#2563EB;
-  --navy:#1A2340;--ink:#1C1C1E;--muted:#6B7280;
-  --border:rgba(0,0,0,.07);--border2:#E5E7EB;
-  --surface:#fff;--bg:#F4F5F7;
-}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;min-height:100vh}
-
-/* ── HEADER ── */
-.hdr{background:var(--navy);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;flex-shrink:0}
+:root{--red:#A32638;--rd:rgba(163,38,56,.08);--gold:#C89A3A;--grn:#16A34A;--blu:#2563EB;--nvy:#1A2340;--ink:#1C1C1E;--mut:#6B7280;--bdr:rgba(0,0,0,.07);--bd2:#E5E7EB;--srf:#fff;--bg:#F4F5F7}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+.hdr{background:var(--nvy);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
 .hdr-l{display:flex;align-items:center;gap:12px}
 .logo{width:32px;height:32px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo b{color:#fff;font-size:13px}
-.hdr-title{color:#fff;font-size:14px;font-weight:600}
-.hdr-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.htitle{color:#fff;font-size:14px;font-weight:600}
+.hdr-r{display:flex;align-items:center;gap:6px}
 .chip{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;display:none;align-items:center;gap:5px}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hbtn{font-family:'DM Sans',sans-serif;font-size:12px;border-radius:7px;padding:6px 12px;cursor:pointer;border:none;font-weight:500;white-space:nowrap}
-.hb-g{background:rgba(255,255,255,.1);color:#fff}.hb-g:hover{background:rgba(255,255,255,.18)}
-.hb-r{background:var(--red);color:#fff}.hb-r:hover{opacity:.88}
-
-/* ── LOADING ── */
-.overlay{position:fixed;inset:0;background:rgba(255,255,255,.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:14px}
-.spin{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spin-txt{font-size:13px;color:var(--muted);max-width:280px;text-align:center}
-
-/* ── HOME ── */
+.hbtn{font-family:inherit;font-size:12px;border-radius:7px;padding:6px 12px;cursor:pointer;border:none;font-weight:500}
+.hbg{background:rgba(255,255,255,.1);color:#fff}.hbg:hover{background:rgba(255,255,255,.18)}
+.hbr{background:var(--red);color:#fff}.hbr:hover{opacity:.88}
+.ovl{position:fixed;inset:0;background:rgba(255,255,255,.93);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:14px}
+.spin{width:36px;height:36px;border:3px solid var(--bd2);border-top-color:var(--red);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sptxt{font-size:13px;color:var(--mut);text-align:center;max-width:300px}
 #home{max-width:680px;margin:60px auto;padding:0 20px 80px}
-.home-head{text-align:center;margin-bottom:32px}
-.home-logo{width:54px;height:54px;background:var(--red);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px}
-.home-logo b{color:#fff;font-size:20px}
-.home-h{font-size:22px;font-weight:600;color:var(--navy);margin-bottom:6px}
-.home-s{font-size:13px;color:var(--muted);line-height:1.6}
-.src-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.src-card{background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;padding:22px 20px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
-.src-card:hover{border-color:var(--red);box-shadow:0 4px 20px rgba(163,38,56,.10);transform:translateY(-1px)}
-.src-icon{font-size:26px;margin-bottom:10px;display:block}
-.src-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
-.src-desc{font-size:12px;color:var(--muted);line-height:1.5}
-.src-badge{position:absolute;top:12px;right:12px;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
-.b-green{background:#DCFCE7;color:#16A34A}
-.b-blue{background:#EFF6FF;color:#2563EB}
-.b-amber{background:#FEF3C7;color:#D97706}
-
-/* ── PANELS ── */
-.panel{background:var(--surface);border-radius:16px;border:1px solid var(--border2);padding:28px 32px;display:none;margin-top:12px}
-.panel.show{display:block}
-.back-btn{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0;margin-bottom:18px;display:flex;align-items:center;gap:4px;font-family:inherit}
-.back-btn:hover{color:var(--ink)}
-.panel-h{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:6px}
-.panel-s{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6}
-.ibox{border-left:3px solid var(--blue);background:#EFF6FF;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7}
+.hhd{text-align:center;margin-bottom:32px}
+.hlogo{width:54px;height:54px;background:var(--red);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px}
+.hlogo b{color:#fff;font-size:20px}
+.hh{font-size:22px;font-weight:600;color:var(--nvy);margin-bottom:6px}
+.hs{font-size:13px;color:var(--mut);line-height:1.6}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.scard{background:var(--srf);border:1.5px solid var(--bd2);border-radius:14px;padding:22px 20px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.scard:hover{border-color:var(--red);box-shadow:0 4px 20px rgba(163,38,56,.10);transform:translateY(-1px)}
+.sicon{font-size:26px;margin-bottom:10px;display:block}
+.sname{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.sdesc{font-size:12px;color:var(--mut);line-height:1.5}
+.sbdg{position:absolute;top:12px;right:12px;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.bg{background:#DCFCE7;color:#16A34A}.bb{background:#EFF6FF;color:#2563EB}.ba{background:#FEF3C7;color:#D97706}
+.pnl{background:var(--srf);border-radius:16px;border:1px solid var(--bd2);padding:28px 32px;display:none;margin-top:12px}
+.pnl.show{display:block}
+.bkbtn{background:none;border:none;color:var(--mut);font-size:13px;cursor:pointer;padding:0;margin-bottom:18px;display:flex;align-items:center;gap:4px;font-family:inherit}
+.bkbtn:hover{color:var(--ink)}
+.ph{font-size:16px;font-weight:600;color:var(--nvy);margin-bottom:6px}
+.ps{font-size:13px;color:var(--mut);margin-bottom:18px;line-height:1.6}
+.ibox{border-left:3px solid var(--blu);background:#EFF6FF;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--mut);margin-bottom:14px;line-height:1.7}
 .ibox b{color:var(--ink)}
-.wbox{border-left:3px solid var(--gold);background:#FFFBEB;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7}
+.wbox{border-left:3px solid var(--gold);background:#FFFBEB;border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--mut);margin-bottom:14px;line-height:1.7}
 .wbox b{color:var(--ink)}
-.lbl{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
-.txt{width:100%;padding:11px 14px;border:1.5px solid var(--border2);border-radius:10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--ink);outline:none;margin-bottom:10px;transition:border-color .15s}
-.txt:focus{border-color:var(--red)}
-.dz{border:2px dashed var(--border2);border-radius:12px;padding:36px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px;position:relative}
-.dz:hover,.dz.drag{border-color:var(--red);background:var(--red-dim)}
+.lbl{font-size:11px;font-weight:500;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.txti{width:100%;padding:11px 14px;border:1.5px solid var(--bd2);border-radius:10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--ink);outline:none;margin-bottom:10px}
+.txti:focus{border-color:var(--red)}
+.dz{border:2px dashed var(--bd2);border-radius:12px;padding:36px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px;position:relative}
+.dz:hover,.dz.drag{border-color:var(--red);background:var(--rd)}
 .dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.dz-icon{font-size:30px;margin-bottom:10px}
-.dz-t{font-size:13px;font-weight:500;margin-bottom:3px}
-.dz-s{font-size:12px;color:var(--muted)}
-.file-ok{background:var(--bg);border-radius:8px;padding:10px 14px;font-size:12px;display:none;align-items:center;gap:10px;margin-bottom:10px}
-.file-ok span{flex:1;font-family:'DM Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.dzi{font-size:30px;margin-bottom:10px}
+.dzt{font-size:13px;font-weight:500;margin-bottom:3px}
+.dzs{font-size:12px;color:var(--mut)}
+.fok{background:var(--bg);border-radius:8px;padding:10px 14px;font-size:12px;display:none;align-items:center;gap:10px;margin-bottom:10px}
+.fok span{flex:1;font-family:'DM Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brow{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 .btn{font-family:inherit;font-size:13px;font-weight:500;border:none;border-radius:10px;padding:10px 22px;cursor:pointer}
-.btn-p{background:var(--red);color:#fff}.btn-p:hover{opacity:.88}
-.btn-s{background:var(--bg);color:var(--ink);border:1px solid var(--border2)}.btn-s:hover{background:var(--border2)}
-.err{background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:12px;color:#B91C1C;margin-top:10px;display:none;white-space:pre-wrap;line-height:1.5}
-
-/* ── DASHBOARD ── */
+.btnp{background:var(--red);color:#fff}.btnp:hover{opacity:.88}
+.btns{background:var(--bg);color:var(--ink);border:1px solid var(--bd2)}.btns:hover{background:var(--bd2)}
+.errbx{background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:12px;color:#B91C1C;margin-top:10px;display:none;white-space:pre-wrap}
 #dash{display:none;padding:24px 28px 60px}
-.tab-bar{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--border2);margin-bottom:22px;gap:0}
-.tab-btn{font-family:inherit;font-size:13px;padding:9px 18px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap}
-.tab-btn:hover{color:var(--ink)}
-.tab-btn.on{color:var(--red);border-bottom-color:var(--red);font-weight:500}
-.kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-.kpi{background:var(--surface);border-radius:12px;padding:16px 20px;border:1px solid var(--border);flex:1;min-width:120px;position:relative;overflow:hidden}
-.kpi-bar{position:absolute;left:0;top:0;width:4px;height:100%;border-radius:12px 0 0 12px}
-.kpi-lbl{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
-.kpi-val{font-size:22px;font-weight:600;font-family:'DM Mono',monospace;line-height:1;word-break:break-all}
-.kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
-.chart-row{display:grid;gap:14px;margin-bottom:14px}
-.chart-row.g1{grid-template-columns:1fr}
-.chart-row.g2{grid-template-columns:1fr 1fr}
-.chart-row.g3{grid-template-columns:2fr 1fr}
-.ccard{background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:18px 20px;min-height:180px}
-.ccard-t{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:14px}
-.tcard{background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden}
-.tbar{padding:12px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.tsearch{flex:1;min-width:160px;padding:7px 11px;border:1px solid var(--border2);border-radius:8px;font-family:inherit;font-size:12px;outline:none;background:var(--bg)}
-.tsearch:focus{border-color:var(--red)}
-.tmeta{font-size:11px;color:var(--muted);white-space:nowrap}
+.tbar{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--bd2);margin-bottom:22px}
+.tbtn{font-family:inherit;font-size:13px;padding:9px 18px;border:none;background:transparent;color:var(--mut);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap}
+.tbtn:hover{color:var(--ink)}
+.tbtn.on{color:var(--red);border-bottom-color:var(--red);font-weight:500}
+.krow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.kpi{background:var(--srf);border-radius:12px;padding:16px 20px;border:1px solid var(--bdr);flex:1;min-width:120px;position:relative;overflow:hidden}
+.kbar{position:absolute;left:0;top:0;width:4px;height:100%;border-radius:12px 0 0 12px}
+.klbl{font-size:10px;font-weight:500;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.kval{font-size:22px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
+.ksub{font-size:11px;color:var(--mut);margin-top:5px}
+.cgrid{display:grid;gap:14px;margin-bottom:14px}
+.cgrid.g1{grid-template-columns:1fr}
+.cgrid.g2{grid-template-columns:1fr 1fr}
+.cgrid.g3{grid-template-columns:2fr 1fr}
+.cc{background:var(--srf);border-radius:14px;border:1px solid var(--bdr);padding:18px 20px}
+.cct{font-size:11px;font-weight:500;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-bottom:14px}
+.tcard{background:var(--srf);border-radius:14px;border:1px solid var(--bdr);overflow:hidden}
+.ttbar{padding:12px 16px;border-bottom:1px solid var(--bd2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tsrch{flex:1;min-width:160px;padding:7px 11px;border:1px solid var(--bd2);border-radius:8px;font-family:inherit;font-size:12px;outline:none;background:var(--bg)}
+.tsrch:focus{border-color:var(--red)}
+.tmeta{font-size:11px;color:var(--mut);white-space:nowrap}
 .twrap{overflow-x:auto;max-height:380px;overflow-y:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:500;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:2}
+thead th{background:var(--nvy);color:#fff;padding:9px 12px;text-align:left;font-weight:500;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:2}
 thead th.r{text-align:right}
-tbody td{padding:8px 12px;border-bottom:1px solid var(--border2);color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-tbody td.r{text-align:right;font-family:'DM Mono',monospace;color:var(--blue)}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--bd2);color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tbody td.r{text-align:right;font-family:'DM Mono',monospace;color:var(--blu)}
 tbody tr:hover td{background:var(--bg)}
 tbody tr:last-child td{border-bottom:none}
-.tfooter{padding:10px 16px;border-top:1px solid var(--border2);font-size:11px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tfoot{padding:10px 16px;border-top:1px solid var(--bd2);font-size:11px;color:var(--mut);display:flex;align-items:center;justify-content:space-between;gap:8px}
 .pgrow{display:flex;gap:4px;flex-wrap:wrap}
-.pgbtn{font-size:11px;padding:3px 8px;border:1px solid var(--border2);border-radius:5px;cursor:pointer;background:var(--surface);color:var(--ink);font-family:inherit}
-.pgbtn:hover{background:var(--bg)}
-.pgbtn.on{background:var(--red);color:#fff;border-color:var(--red)}
-.pgbtn:disabled{opacity:.35;cursor:default;pointer-events:none}
-.notice{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 22px;margin-bottom:14px;font-size:13px;color:var(--muted);display:flex;gap:12px;align-items:flex-start;line-height:1.6}
+.pgb{font-size:11px;padding:3px 8px;border:1px solid var(--bd2);border-radius:5px;cursor:pointer;background:var(--srf);color:var(--ink);font-family:inherit}
+.pgb:hover{background:var(--bg)}
+.pgb.on{background:var(--red);color:#fff;border-color:var(--red)}
+.pgb:disabled{opacity:.35;cursor:default;pointer-events:none}
+.notice{background:var(--srf);border:1px solid var(--bd2);border-radius:12px;padding:18px 22px;margin-bottom:14px;font-size:13px;color:var(--mut);display:flex;gap:12px;line-height:1.6}
 .notice b{color:var(--ink)}
-
-@media(max-width:620px){
-  .src-grid{grid-template-columns:1fr}
-  .chart-row.g2,.chart-row.g3{grid-template-columns:1fr}
-  #dash{padding:16px 14px 40px}
-  .hdr{padding:0 14px}
-  .kpi{min-width:100px}
-}
+@media(max-width:600px){.sgrid{grid-template-columns:1fr}.cgrid.g2,.cgrid.g3{grid-template-columns:1fr}#dash{padding:16px 14px 40px}.hdr{padding:0 14px}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-l">
     <div class="logo"><b>SSB</b></div>
-    <span class="hdr-title">Operations Dashboard</span>
+    <span class="htitle">Operations Dashboard</span>
   </div>
   <div class="hdr-r">
     <span class="chip" id="chip"></span>
-    <button class="hbtn hb-g" id="refresh-btn" style="display:none" onclick="refreshSheet()">↺ Refresh</button>
-    <button class="hbtn hb-g" id="change-btn"  style="display:none" onclick="goHome()">⚙ Change source</button>
-    <button class="hbtn hb-r" id="export-btn"  style="display:none" onclick="window.print()">↓ Export PDF</button>
+    <button class="hbtn hbg" id="rbtn" style="display:none" onclick="doRefresh()">↺ Refresh</button>
+    <button class="hbtn hbg" id="cbtn" style="display:none" onclick="goHome()">⚙ Change source</button>
+    <button class="hbtn hbr" id="ebtn" style="display:none" onclick="window.print()">↓ Export PDF</button>
   </div>
 </div>
 
-<!-- OVERLAY -->
-<div class="overlay" id="overlay">
+<div class="ovl" id="ovl">
   <div class="spin"></div>
-  <div class="spin-txt" id="spin-txt">Loading…</div>
+  <div class="sptxt" id="sptxt">Loading…</div>
 </div>
 
-<!-- HOME -->
 <div id="home">
-  <div class="home-head">
-    <div class="home-logo"><b>SSB</b></div>
-    <div class="home-h">Connect your data</div>
-    <div class="home-s">Works with any sheet structure — any column names, any data types.<br>The dashboard figures out what to show automatically.</div>
+  <div class="hhd">
+    <div class="hlogo"><b>SSB</b></div>
+    <div class="hh">Connect your data</div>
+    <div class="hs">Works with any sheet — any column names, any structure.<br>Charts and insights are generated automatically.</div>
   </div>
-
-  <div class="src-grid" id="picker">
-    <div class="src-card" onclick="showPanel('gs')">
-      <span class="src-badge b-green">Auto-refresh</span>
-      <span class="src-icon">📊</span>
-      <div class="src-name">Google Sheets</div>
-      <div class="src-desc">Paste your Sheet ID. Reads all tabs. Refreshes live every 5 minutes as staff update data.</div>
+  <div class="sgrid" id="picker">
+    <div class="scard" onclick="openPanel('gs')">
+      <span class="sbdg bg">Auto-refresh</span>
+      <span class="sicon">📊</span>
+      <div class="sname">Google Sheets</div>
+      <div class="sdesc">Paste your Sheet ID. Reads all tabs. Refreshes every 5 min as staff update data.</div>
     </div>
-    <div class="src-card" onclick="showPanel('xl')">
-      <span class="src-badge b-blue">Upload</span>
-      <span class="src-icon">📗</span>
-      <div class="src-name">Excel (.xlsx / .xls)</div>
-      <div class="src-desc">Upload any Excel file. Every sheet tab loads automatically. Nothing leaves your computer.</div>
+    <div class="scard" onclick="openPanel('xl')">
+      <span class="sbdg bb">Upload</span>
+      <span class="sicon">📗</span>
+      <div class="sname">Excel (.xlsx / .xls)</div>
+      <div class="sdesc">Upload any Excel file. Every sheet becomes a tab. File stays on your computer.</div>
     </div>
-    <div class="src-card" onclick="showPanel('csv')">
-      <span class="src-badge b-blue">Upload</span>
-      <span class="src-icon">📄</span>
-      <div class="src-name">CSV File</div>
-      <div class="src-desc">Drop any .csv — BANNER, PeopleSoft, Google Forms exports, or any custom system.</div>
+    <div class="scard" onclick="openPanel('csv')">
+      <span class="sbdg bb">Upload</span>
+      <span class="sicon">📄</span>
+      <div class="sname">CSV File</div>
+      <div class="sdesc">Drop any .csv — BANNER, PeopleSoft, Google Forms, or any export.</div>
     </div>
-    <div class="src-card" onclick="showPanel('sf')">
-      <span class="src-badge b-amber">No login needed</span>
-      <span class="src-icon">☁️</span>
-      <div class="src-name">Salesforce</div>
-      <div class="src-desc">Export any Salesforce report as CSV and upload it. No API keys or IT setup required.</div>
+    <div class="scard" onclick="openPanel('sf')">
+      <span class="sbdg ba">No login needed</span>
+      <span class="sicon">☁️</span>
+      <div class="sname">Salesforce</div>
+      <div class="sdesc">Export any report as CSV and upload it. No API keys or IT setup needed.</div>
     </div>
   </div>
   <div style="text-align:center">
-    <button class="btn btn-s" onclick="loadDemo()">Try with demo data →</button>
+    <button class="btn btns" onclick="loadDemo()">Try demo data →</button>
   </div>
 
-  <!-- Google Sheets panel -->
-  <div class="panel" id="panel-gs">
-    <button class="back-btn" onclick="backHome()">← Back</button>
-    <div class="panel-h">📊 Google Sheets</div>
-    <div class="panel-s">Reads every tab automatically. Any column names, any structure — no reformatting needed.</div>
-    <div class="ibox">
-      <b>Find your Sheet ID:</b><br>
-      URL bar: <code style="font-size:10px;background:#DBEAFE;padding:1px 5px;border-radius:3px">docs.google.com/spreadsheets/d/<b style="color:var(--red)">YOUR_ID_HERE</b>/edit</code><br><br>
-      <b>Publish it first:</b> File → Share → Publish to web → Entire Document → CSV → Publish
-    </div>
+  <div class="pnl" id="pnl-gs">
+    <button class="bkbtn" onclick="closePanel()">← Back</button>
+    <div class="ph">📊 Google Sheets</div>
+    <div class="ps">Reads every tab automatically. Any column names and structure.</div>
+    <div class="ibox"><b>Find your Sheet ID:</b><br>URL: docs.google.com/spreadsheets/d/<b style="color:var(--red)">ID_HERE</b>/edit<br><br><b>Publish first:</b> File → Share → Publish to web → CSV → Publish</div>
     <div class="lbl">Sheet ID</div>
-    <input class="txt" id="gs-id" placeholder="Paste your Sheet ID here…">
-    <div class="err" id="gs-err"></div>
-    <div class="btn-row"><button class="btn btn-p" onclick="connectGS()">Connect →</button></div>
+    <input class="txti" id="gsid" placeholder="Paste your Sheet ID here…">
+    <div class="errbx" id="gs-err"></div>
+    <div class="brow"><button class="btn btnp" onclick="connectGS()">Connect →</button></div>
   </div>
 
-  <!-- Excel panel -->
-  <div class="panel" id="panel-xl">
-    <button class="back-btn" onclick="backHome()">← Back</button>
-    <div class="panel-h">📗 Excel File</div>
-    <div class="panel-s">Every sheet tab becomes a dashboard tab. File stays on your computer — nothing is sent anywhere.</div>
-    <div class="dz" id="dz-xl" ondragover="dzOver(event,'dz-xl')" ondragleave="dzOut('dz-xl')" ondrop="dzDrop(event,'xl')">
-      <input type="file" accept=".xlsx,.xls" onchange="filePick(event,'xl')">
-      <div class="dz-icon">📗</div>
-      <div class="dz-t">Drop Excel file here</div>
-      <div class="dz-s">or click to browse · .xlsx and .xls supported</div>
+  <div class="pnl" id="pnl-xl">
+    <button class="bkbtn" onclick="closePanel()">← Back</button>
+    <div class="ph">📗 Excel File</div>
+    <div class="ps">Every sheet tab loads as a dashboard tab. Nothing is sent anywhere.</div>
+    <div class="dz" id="dz-xl" ondragover="dzOvr(event,'dz-xl')" ondragleave="dzOut('dz-xl')" ondrop="dzDrp(event,'xl')">
+      <input type="file" accept=".xlsx,.xls" onchange="fPick(event,'xl')">
+      <div class="dzi">📗</div><div class="dzt">Drop Excel file here</div><div class="dzs">or click to browse · .xlsx and .xls</div>
     </div>
-    <div class="file-ok" id="ok-xl"><span id="fn-xl"></span><button class="btn btn-p" onclick="loadXL()">Load →</button></div>
-    <div class="err" id="xl-err"></div>
+    <div class="fok" id="ok-xl"><span id="fn-xl"></span><button class="btn btnp" onclick="loadXL()">Load →</button></div>
+    <div class="errbx" id="xl-err"></div>
   </div>
 
-  <!-- CSV panel -->
-  <div class="panel" id="panel-csv">
-    <button class="back-btn" onclick="backHome()">← Back</button>
-    <div class="panel-h">📄 CSV File</div>
-    <div class="panel-s">Works with any CSV — BANNER, PeopleSoft, Google Forms, or any custom export.</div>
-    <div class="dz" id="dz-csv" ondragover="dzOver(event,'dz-csv')" ondragleave="dzOut('dz-csv')" ondrop="dzDrop(event,'csv')">
-      <input type="file" accept=".csv,.txt" onchange="filePick(event,'csv')">
-      <div class="dz-icon">📄</div>
-      <div class="dz-t">Drop CSV file here</div>
-      <div class="dz-s">or click to browse · .csv supported</div>
+  <div class="pnl" id="pnl-csv">
+    <button class="bkbtn" onclick="closePanel()">← Back</button>
+    <div class="ph">📄 CSV File</div>
+    <div class="ps">Works with any CSV — BANNER, PeopleSoft, Google Forms, custom exports.</div>
+    <div class="dz" id="dz-csv" ondragover="dzOvr(event,'dz-csv')" ondragleave="dzOut('dz-csv')" ondrop="dzDrp(event,'csv')">
+      <input type="file" accept=".csv,.txt" onchange="fPick(event,'csv')">
+      <div class="dzi">📄</div><div class="dzt">Drop CSV file here</div><div class="dzs">or click to browse</div>
     </div>
-    <div class="file-ok" id="ok-csv"><span id="fn-csv"></span><button class="btn btn-p" onclick="loadCSV()">Load →</button></div>
-    <div class="err" id="csv-err"></div>
+    <div class="fok" id="ok-csv"><span id="fn-csv"></span><button class="btn btnp" onclick="loadCSV()">Load →</button></div>
+    <div class="errbx" id="csv-err"></div>
   </div>
 
-  <!-- Salesforce panel -->
-  <div class="panel" id="panel-sf">
-    <button class="back-btn" onclick="backHome()">← Back</button>
-    <div class="panel-h">☁️ Salesforce Report</div>
-    <div class="panel-s">No API keys, no IT setup. Export any report as CSV and upload it here.</div>
-    <div class="wbox">
-      <b>How to export from Salesforce:</b><br>
-      1. Open any Report → click the arrow next to "Edit" → <b>Export</b><br>
-      2. Choose <b>Details Only</b> → Format: <b>CSV</b> → Export<br>
-      3. Upload that file below
+  <div class="pnl" id="pnl-sf">
+    <button class="bkbtn" onclick="closePanel()">← Back</button>
+    <div class="ph">☁️ Salesforce Report</div>
+    <div class="ps">No API keys, no IT setup. Export any report as CSV and upload.</div>
+    <div class="wbox"><b>How to export from Salesforce:</b><br>1. Open a Report → click arrow next to "Edit" → Export<br>2. Choose Details Only → Format: CSV → Export<br>3. Upload that file below</div>
+    <div class="dz" id="dz-sf" ondragover="dzOvr(event,'dz-sf')" ondragleave="dzOut('dz-sf')" ondrop="dzDrp(event,'sf')">
+      <input type="file" accept=".csv,.txt" onchange="fPick(event,'sf')">
+      <div class="dzi">☁️</div><div class="dzt">Drop Salesforce CSV here</div><div class="dzs">or click to browse</div>
     </div>
-    <div class="dz" id="dz-sf" ondragover="dzOver(event,'dz-sf')" ondragleave="dzOut('dz-sf')" ondrop="dzDrop(event,'sf')">
-      <input type="file" accept=".csv,.txt" onchange="filePick(event,'sf')">
-      <div class="dz-icon">☁️</div>
-      <div class="dz-t">Drop Salesforce CSV export here</div>
-      <div class="dz-s">or click to browse</div>
-    </div>
-    <div class="file-ok" id="ok-sf"><span id="fn-sf"></span><button class="btn btn-p" onclick="loadSF()">Load →</button></div>
-    <div class="err" id="sf-err"></div>
+    <div class="fok" id="ok-sf"><span id="fn-sf"></span><button class="btn btnp" onclick="loadSF()">Load →</button></div>
+    <div class="errbx" id="sf-err"></div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dash">
-  <div class="tab-bar" id="tab-bar"></div>
-  <div id="dash-body"></div>
+  <div class="tbar" id="tbar"></div>
+  <div id="dbody"></div>
 </div>
 
 <script>
 'use strict';
 
-// ══════════════════════════════════════════════════════════
-//  CONSTANTS
-// ══════════════════════════════════════════════════════════
-const PAL = ['#A32638','#2563EB','#C89A3A','#16A34A','#9333EA','#0891B2','#EA580C','#65A30D','#DB2777','#78716C'];
-const PAGE_SZ = 25;
-const SAMPLE_SZ = 200; // rows sampled for column analysis
+// ── Palette ───────────────────────────────────────────────
+const PAL=['#A32638','#2563EB','#C89A3A','#16A34A','#9333EA','#0891B2','#EA580C','#65A30D','#DB2777','#78716C'];
+const PGSZ=25;
+
+// ── State ─────────────────────────────────────────────────
+const S={tabs:{},names:[],active:'',filtered:{},pages:{},charts:{},src:'',gsId:'',timer:null,files:{}};
 
 // ══════════════════════════════════════════════════════════
-//  GLOBAL STATE
-// ══════════════════════════════════════════════════════════
-const S = {
-  tabs: {},          // { name: rows[] }
-  names: [],         // tab names in order
-  active: '',        // current tab name
-  filtered: {},      // { name: rows[] }
-  pages: {},         // { name: currentPage }
-  charts: {},        // { id: Chart instance }
-  source: '',
-  gsId: '',
-  timer: null,
-  files: {},         // pending file objects
-};
-
-// ══════════════════════════════════════════════════════════
-//  INTELLIGENCE ENGINE
-//  Rule: be inclusive. Show things. Only skip proven junk.
+//  INTELLIGENCE ENGINE — Pure structural analysis
+//  No word-boundary regex. Just value inspection + name hints.
 // ══════════════════════════════════════════════════════════
 
-// Column names that are definitely junk — never chart or KPI these
-const JUNK_NAMES = [
-  /\bphone\b|\bmobile\b|contact.?n[ou]|\btel\b|\bfax\b|\bcell\b/i,
-  /^(sr|s|serial|seq)\.?\s*no\.?$/i,
-  /^(roll|reg|registration)\.?\s*no\.?$/i,
-  /^(id|_id|uid|uuid)$/i,
-  /\b(email|e.mail|url|link|website)\b/i,
-  /\b(zip|postal|pin)\.?code\b/i,
-  /\b(password|token|secret)\b/i,
-];
-
-// Column names that strongly signal a metric
-const METRIC_NAMES = [
-  /\b(count|total|sum|amount|amt|num(ber)?)\b/i,
-  /\b(students?|enrollment|headcount|registrations?)\b/i,
-  /\b(attendance|attendees?|participants?)\b/i,
-  /\b(applicants?|applications?|admits?|admitted|enrolled)\b/i,
-  /\b(revenue|income|expense|budget|fee|salary|cost|price|payment)\b/i,
-  /\b(score|gpa|cgpa|sgpa|marks|grade|rating|rank|points?)\b/i,
-  /\b(seats?|capacity|openings?|vacanc)\b/i,
-  /\b(credits?|units?|hours?|days?|weeks?|months?)\b/i,
-  /\b(bmi|weight|height)\b/i,
-  /\b(health|sleep|mental|physical)\b/i,
-  /\b(completed|passed|failed|dropouts?)\b/i,
-  /\b(duration|length|size|volume)\b/i,
-  /\bage\b(?!.*cat)/i,
-];
-
-// Column names or value patterns that make good chart groupers
-const CAT_NAMES = [
-  /\b(year|semester|term|session|batch|cohort)\b/i,
-  /\b(division|section|class|group)\b/i,
-  /\b(program|course|degree|major|stream|branch|dept|department)\b/i,
-  /\b(status|stage|state|phase|level|tier)\b/i,
-  /\b(type|category|kind|mode|format)\b/i,
-  /\b(gender|sex)\b/i,
-  /\b(campus|location|city|region|site)\b/i,
-  /\b(country|nation)\b/i,
-  /\b(race|ethnicity)\b/i,
-  /\b(age.?cat|age.?group|age.?range|age.?band)\b/i,
-  /\b(diabetic|smoking|drinking|disease|condition|disorder)\b/i,
-  /\b(gen.?health|general.?health)\b/i,
-  /\b(activity|active)\b/i,
-];
-
-function safe(v) {
-  try { return (v === null || v === undefined) ? '' : String(v).trim(); }
-  catch (_) { return ''; }
+function sv(v){
+  // safe value → always returns a string
+  if(v===null||v===undefined)return '';
+  try{return String(v).trim();}catch(_){return '';}
 }
 
-function parseNum(v) {
-  try {
-    const n = parseFloat(safe(v).replace(/[^0-9.\-]/g, ''));
-    return (isFinite(n) && !isNaN(n)) ? n : null;
-  } catch (_) { return null; }
+function toNum(v){
+  try{
+    const s=sv(v).replace(/[^0-9.\-]/g,'');
+    if(!s)return null;
+    const n=parseFloat(s);
+    return isFinite(n)?n:null;
+  }catch(_){return null;}
 }
 
-function classifyCol(name, allRows) {
-  // Sample smartly — take spread across the dataset
+function isJunkName(name){
+  // Returns true if this column should be skipped for charts/KPIs entirely
+  const n=name.toLowerCase();
+  // Phone / contact
+  if(/phone|mobile|contact.?no|contact.?num|fax|whatsapp/.test(n))return true;
+  // Serial / roll numbers
+  if(/^s\.?r?\.?\s*no\.?$|^sr\s*no|^serial\s*no|^roll\s*no|^reg\s*no|^registration\s*no/.test(n))return true;
+  // Pure ID columns
+  if(/^_?id$|^uid$|^uuid$|^ref\.?\s*(no|code|id)?$/.test(n))return true;
+  // Email / URL
+  if(/\bemail\b|e-mail|^url$|^link$|^website$/.test(n))return true;
+  // Passwords etc
+  if(/password|secret|token/.test(n))return true;
+  return false;
+}
+
+function classifyCol(colName, rows){
+  // Use a spread sample for large datasets
+  const total=rows.length;
   let sample;
-  if (allRows.length <= 300) {
-    sample = allRows;
-  } else {
-    const step = Math.floor(allRows.length / 200);
-    sample = allRows.filter((_, i) => i % step === 0).slice(0, 200);
+  if(total<=400){
+    sample=rows;
+  }else{
+    // Take every Nth row for a representative spread
+    const step=Math.ceil(total/300);
+    sample=[];
+    for(let i=0;i<total;i+=step){sample.push(rows[i]);}
   }
 
-  const name_clean = (name || '').trim();
-  const vals = sample.map(r => safe((r || {})[name])).filter(v => v !== '');
-  if (!vals.length) return 'empty';
+  const n=colName.toLowerCase().trim();
 
-  // ── RULE 1: Junk column name → identifier (table-only) ──
-  if (JUNK_NAMES.some(p => p.test(name_clean))) return 'identifier';
+  // ── Step 1: Junk check by name ────────────────────────
+  if(isJunkName(n))return 'identifier';
 
-  // ── RULE 2: All Yes/No/True/False → category ─────────────
-  const unique = [...new Set(vals)];
-  const allBool = unique.length <= 8 && unique.every(v => /^(yes|no|true|false|y|n|1|0)$/i.test(v));
-  if (allBool) return 'category';
+  // ── Step 2: Get non-empty values ──────────────────────
+  const vals=[];
+  for(const row of sample){
+    const v=sv((row||{})[colName]);
+    if(v!=='')vals.push(v);
+  }
+  if(!vals.length)return 'empty';
 
-  // ── RULE 3: Phone number values → identifier ──────────────
-  // 7+ consecutive digits, not a normal metric number
-  const phoneLike = vals.slice(0, 50).filter(v => {
-    const digits = v.replace(/[\s\-\+\(\)]/g, '');
-    return /^\d{7,16}$/.test(digits);
-  }).length / Math.min(vals.length, 50) > 0.55;
-  if (phoneLike) return 'identifier';
+  // ── Step 3: Yes/No boolean → category ────────────────
+  const uniq=[...new Set(vals)];
+  const boolPat=/^(yes|no|true|false|y|n)$/i;
+  if(uniq.length<=6&&uniq.every(v=>boolPat.test(v)))return 'category';
 
-  // ── RULE 4: Numeric analysis ──────────────────────────────
-  const nums = vals.map(parseNum).filter(v => v !== null);
-  const numRatio = nums.length / vals.length;
+  // ── Step 4: Phone-number values → identifier ─────────
+  // Real phone numbers have 7+ consecutive digits
+  let phoneCnt=0;
+  const checkN=Math.min(vals.length,60);
+  for(let i=0;i<checkN;i++){
+    const digits=vals[i].replace(/[\s\-\+\(\)\.]/g,'');
+    if(/^\d{7,16}$/.test(digits))phoneCnt++;
+  }
+  if(phoneCnt/checkN>0.5)return 'identifier';
 
-  if (numRatio >= 0.7) {
-    const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
-    const max = Math.max(...nums);
+  // ── Step 5: Numeric analysis ──────────────────────────
+  const nums=[];
+  for(const v of vals){
+    const n2=toNum(v);
+    if(n2!==null)nums.push(n2);
+  }
+  const numRatio=nums.length/vals.length;
 
-    // Named metric → always metric
-    if (METRIC_NAMES.some(p => p.test(name_clean))) return 'metric';
-
-    // Very large numbers (> 1M and no metric name) → likely ID/phone
-    if (max > 1_000_000) return 'identifier';
-
-    // Small to medium numbers → metric (BMI=28, SleepTime=7, etc.)
+  if(numRatio>=0.65){
+    const sum=nums.reduce((a,b)=>a+b,0);
+    const avg=sum/nums.length;
+    const max=Math.max.apply(null,nums);
+    // Very large numbers with no metric name hint → probably an ID/phone
+    if(max>999999&&avg>99999)return 'identifier';
+    // Everything else numeric → metric
     return 'metric';
   }
 
-  // ── RULE 5: Named category ────────────────────────────────
-  if (CAT_NAMES.some(p => p.test(name_clean))) return 'category';
+  // ── Step 6: Cardinality → category ───────────────────
+  // Few unique values relative to dataset = good grouper
+  const ratio=uniq.length/vals.length;
+  if(uniq.length<=50&&ratio<0.5)return 'category';
 
-  // ── RULE 6: Age-range strings like "55-59", "80 or older" ─
-  const ageRanges = vals.slice(0, 30).filter(v =>
-    /^\d{2}\s*[-–]\s*\d{2}$|^\d+\s+or\s+(older|younger)$/i.test(v)
-  ).length;
-  if (ageRanges >= Math.min(3, vals.length * 0.2)) return 'category';
+  // ── Step 7: Named category hints (substring, no regex) ─
+  const catHints=['year','semester','term','session','batch','cohort',
+    'division','section','class','group','program','course','degree',
+    'major','stream','branch','dept','department','status','stage',
+    'state','phase','level','type','category','kind','mode','gender',
+    'sex','campus','location','city','region','race','ethnicity',
+    'diabetic','smoking','drinking','disease','condition','disorder',
+    'health','activity','active'];
+  for(const hint of catHints){
+    if(n.includes(hint))return 'category';
+  }
 
-  // ── RULE 7: Low cardinality → category ───────────────────
-  // Few unique values = good grouper regardless of name
-  const cardinalityRatio = unique.length / vals.length;
-  if (unique.length <= 30 && cardinalityRatio < 0.5) return 'category';
+  // ── Step 8: Age range strings like "55-59", "80 or older" ─
+  let ageCnt=0;
+  const ageCheck=Math.min(vals.length,30);
+  for(let i=0;i<ageCheck;i++){
+    if(/^\d{2}\s*[-]\s*\d{2}$|^\d+\s+or\s+(older|younger)$/i.test(vals[i]))ageCnt++;
+  }
+  if(ageCnt>=Math.min(3,ageCheck*0.2))return 'category';
 
-  // ── RULE 8: Date-like ─────────────────────────────────────
-  const isDate = vals.some(v =>
-    /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(v)
-  );
-  if (isDate) return 'date';
+  // ── Step 9: Date-like ─────────────────────────────────
+  for(const v of vals.slice(0,20)){
+    if(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.test(v))return 'date';
+  }
 
-  // ── RULE 9: Default → text (show in table only) ───────────
   return 'text';
 }
 
-function analyzeTab(rows) {
-  const out = { metrics: [], categories: [], identifiers: [], dates: [], text: [] };
-  if (!rows || !rows.length) return out;
-  const cols = Object.keys(rows[0] || {});
-  cols.forEach(col => {
-    try {
-      const type = classifyCol(col, rows);
-      if (type === 'empty' || type === 'skip') return;
-      (out[type] || out.text).push(col);
-    } catch (_) { out.text.push(col); }
-  });
+function analyzeTab(rows){
+  const out={metrics:[],categories:[],identifiers:[],dates:[],text:[]};
+  if(!rows||!rows.length)return out;
+  const cols=Object.keys(rows[0]||{});
+  for(const col of cols){
+    try{
+      const t=classifyCol(col,rows);
+      if(t==='empty'||t==='skip')continue;
+      (out[t]||out.text).push(col);
+    }catch(_){out.text.push(col);}
+  }
   return out;
 }
 
 // ══════════════════════════════════════════════════════════
-//  DATA LOADING
+//  DATA HELPERS
 // ══════════════════════════════════════════════════════════
-function cleanRows(raw) {
-  try {
-    return (raw || [])
-      .map(r => {
-        const clean = {};
-        Object.entries(r || {}).forEach(([k, v]) => {
-          const key = safe(k);
-          if (key) clean[key] = safe(v);
-        });
-        return clean;
-      })
-      .filter(r => Object.values(r).some(v => v !== ''));
-  } catch (_) { return []; }
+function cleanRows(raw){
+  try{
+    return(raw||[]).map(r=>{
+      const c={};
+      for(const[k,v]of Object.entries(r||{})){
+        const key=sv(k);
+        if(key)c[key]=sv(v);
+      }
+      return c;
+    }).filter(r=>Object.values(r).some(v=>v!==''));
+  }catch(_){return[];}
 }
 
-async function connectGS() {
-  const id = (document.getElementById('gs-id').value || '').trim();
-  if (!id) { showErr('gs', 'Please paste your Sheet ID.'); return; }
-  S.gsId = id;
-  hideErr('gs');
-  spin(true, 'Connecting to Google Sheets…');
-  try {
+function escH(s){
+  return sv(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════════════════
+//  CONNECTORS
+// ══════════════════════════════════════════════════════════
+async function connectGS(){
+  const id=(document.getElementById('gsid').value||'').trim();
+  if(!id){showErr('gs','Please paste your Sheet ID.');return;}
+  S.gsId=id;hideErr('gs');
+  loading(true,'Connecting to Google Sheets…');
+  try{
     await fetchGS(id);
-    localStorage.setItem('ssb_gs', id);
-    spin(false);
-    launch('Google Sheets', true);
-  } catch (e) {
-    spin(false);
-    showErr('gs', 'Could not connect. Check:\n• Published: File → Share → Publish to web → CSV → Publish\n• Sheet ID is the part between /d/ and /edit in the URL');
+    localStorage.setItem('ssb_gs',id);
+    loading(false);
+    launch('Google Sheets',true);
+  }catch(e){
+    loading(false);
+    showErr('gs','Could not connect.\n• Publish the sheet: File → Share → Publish to web → Entire Document → CSV → Publish\n• Check the Sheet ID is the part between /d/ and /edit in the URL');
   }
 }
 
-async function fetchGS(id) {
-  const meta = await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json`);
-  if (!meta.ok) throw new Error('not accessible');
-  const txt = await meta.text();
-  const hits = [...txt.matchAll(/"name":"([^"]+)"/g)];
-  let names = hits.map(m => m[1]).filter((v, i, a) => a.indexOf(v) === i).slice(0, 20);
-  if (!names.length) names = ['Sheet1'];
-
-  S.tabs = {}; S.names = [];
-  const base = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=`;
-
-  for (const name of names) {
-    try {
-      spin(true, `Reading tab: ${name}…`);
-      const r = await fetch(base + encodeURIComponent(name));
-      if (!r.ok) continue;
-      const raw = await r.text();
-      if (!raw.trim()) continue;
-      const parsed = Papa.parse(raw.trim(), { header: true, skipEmptyLines: true, dynamicTyping: false });
-      const rows = cleanRows(parsed.data || []);
-      if (rows.length) { S.tabs[name] = rows; S.names.push(name); }
-    } catch (_) { /* skip unreadable tabs */ }
+async function fetchGS(id){
+  const res=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json');
+  if(!res.ok)throw new Error('not accessible');
+  const txt=await res.text();
+  const hits=[...txt.matchAll(/"name":"([^"]+)"/g)];
+  let names=hits.map(m=>m[1]).filter((v,i,a)=>a.indexOf(v)===i).slice(0,25);
+  if(!names.length)names=['Sheet1'];
+  S.tabs={};S.names=[];
+  const base='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv&sheet=';
+  for(const name of names){
+    try{
+      loading(true,'Reading tab: '+name+'…');
+      const r=await fetch(base+encodeURIComponent(name));
+      if(!r.ok)continue;
+      const raw=await r.text();
+      if(!raw.trim())continue;
+      const rows=cleanRows(Papa.parse(raw.trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
+      if(rows.length){S.tabs[name]=rows;S.names.push(name);}
+    }catch(_){}
   }
-  if (!S.names.length) throw new Error('no readable data');
+  if(!S.names.length)throw new Error('no readable data');
 }
 
-async function loadXL() {
-  const f = S.files.xl; if (!f) return;
-  spin(true, 'Reading Excel file…');
-  try {
-    const buf = await f.arrayBuffer();
-    const wb = XLSX.read(buf, { type: 'array' });
-    S.tabs = {}; S.names = [];
-    (wb.SheetNames || []).forEach(name => {
-      try {
-        const rows = cleanRows(XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '', raw: false }));
-        if (rows.length) { S.tabs[name] = rows; S.names.push(name); }
-      } catch (_) {}
-    });
-    if (!S.names.length) throw new Error('No readable data found in this file');
-    spin(false); launch('Excel', false);
-  } catch (e) { spin(false); showErr('xl', e.message); }
+async function loadXL(){
+  const f=S.files.xl;if(!f)return;
+  loading(true,'Reading Excel file…');
+  try{
+    const buf=await f.arrayBuffer();
+    const wb=XLSX.read(buf,{type:'array'});
+    S.tabs={};S.names=[];
+    for(const name of(wb.SheetNames||[])){
+      try{
+        const rows=cleanRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:'',raw:false}));
+        if(rows.length){S.tabs[name]=rows;S.names.push(name);}
+      }catch(_){}
+    }
+    if(!S.names.length)throw new Error('No readable data found');
+    loading(false);launch('Excel',false);
+  }catch(e){loading(false);showErr('xl',e.message);}
 }
 
-async function loadCSV() {
-  const f = S.files.csv; if (!f) return;
-  spin(true, 'Reading CSV…');
-  try {
-    const txt = await f.text();
-    const rows = cleanRows(Papa.parse(txt.trim(), { header: true, skipEmptyLines: true, dynamicTyping: false }).data || []);
-    if (!rows.length) throw new Error('No data found in this file');
-    const name = f.name.replace(/\.[^.]+$/, '') || 'Data';
-    S.tabs = { [name]: rows }; S.names = [name];
-    spin(false); launch('CSV', false);
-  } catch (e) { spin(false); showErr('csv', e.message); }
+async function loadCSV(){
+  const f=S.files.csv;if(!f)return;
+  loading(true,'Reading CSV…');
+  try{
+    const txt=await f.text();
+    const rows=cleanRows(Papa.parse(txt.trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
+    if(!rows.length)throw new Error('No data found');
+    const name=f.name.replace(/\.[^.]+$/,'')||'Data';
+    S.tabs={[name]:rows};S.names=[name];
+    loading(false);launch('CSV',false);
+  }catch(e){loading(false);showErr('csv',e.message);}
 }
 
-async function loadSF() {
-  const f = S.files.sf; if (!f) return;
-  spin(true, 'Reading Salesforce export…');
-  try {
-    const raw = await f.text();
-    // Strip Salesforce footer rows (Grand Total lines)
-    const lines = raw.split('\n').filter(l => !/^"?Grand\s+Total/i.test(l.trim()) && l.trim());
-    const rows = cleanRows(Papa.parse(lines.join('\n').trim(), { header: true, skipEmptyLines: true, dynamicTyping: false }).data || []);
-    if (!rows.length) throw new Error('No data found in this export');
-    const name = f.name.replace(/\.[^.]+$/, '').replace(/_/g, ' ') || 'Salesforce';
-    S.tabs = { [name]: rows }; S.names = [name];
-    spin(false); launch('Salesforce', false);
-  } catch (e) { spin(false); showErr('sf', e.message); }
+async function loadSF(){
+  const f=S.files.sf;if(!f)return;
+  loading(true,'Reading Salesforce export…');
+  try{
+    const raw=await f.text();
+    const lines=raw.split('\n').filter(l=>!/^"?Grand\s+Total/i.test(l.trim())&&l.trim());
+    const rows=cleanRows(Papa.parse(lines.join('\n').trim(),{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
+    if(!rows.length)throw new Error('No data found');
+    const name=f.name.replace(/\.[^.]+$/,'').replace(/_/g,' ')||'Salesforce';
+    S.tabs={[name]:rows};S.names=[name];
+    loading(false);launch('Salesforce',false);
+  }catch(e){loading(false);showErr('sf',e.message);}
 }
 
-function loadDemo() {
-  S.tabs = {
-    'Student Internships': [
+function loadDemo(){
+  S.tabs={
+    'Student Internships':[
       {Name:'Abhishek Mane',Year:'BE',Division:'A',Roll_No:'38',Contact:'8169861849',Company:'Anubhav Fabricators',Duration_Days:'60'},
       {Name:'Manish Gunjal',Year:'BE',Division:'D',Roll_No:'20',Contact:'8369934527',Company:'IIT Bombay RM LAB',Duration_Days:'90'},
       {Name:'Ronak Oza',Year:'BE',Division:'A',Roll_No:'45',Contact:'9167722688',Company:'Simulation Lab Pune',Duration_Days:'60'},
@@ -565,7 +494,7 @@ function loadDemo() {
       {Name:'Archana Bandgar',Year:'TE',Division:'A',Roll_No:'3',Contact:'8805491342',Company:'Electromech CPL',Duration_Days:'15'},
       {Name:'Sourabh Chalke',Year:'BE',Division:'A',Roll_No:'11',Contact:'9702269578',Company:'Diesel Loco Shed',Duration_Days:'30'},
     ],
-    'Enrollment': [
+    'Enrollment':[
       {Term:'Spring 2025',Program:'BAIS',Students:'398',Division:'Graduate'},
       {Term:'Spring 2025',Program:'MBA',Students:'347',Division:'Graduate'},
       {Term:'Spring 2025',Program:'MS Finance',Students:'282',Division:'Graduate'},
@@ -575,431 +504,284 @@ function loadDemo() {
       {Term:'Fall 2024',Program:'MS Finance',Students:'265',Division:'Graduate'},
       {Term:'Fall 2024',Program:'MS Management',Students:'152',Division:'Graduate'},
     ],
-    'Events': [
+    'Events':[
       {Event:'MBA Info Session',Date:'Mar 28',Type:'Webinar',Attendance:'',Status:'Upcoming'},
       {Event:'BAIS Career Panel',Date:'Mar 15',Type:'In-Person',Attendance:'142',Status:'Done'},
       {Event:'Finance Night',Date:'Mar 8',Type:'In-Person',Attendance:'98',Status:'Done'},
       {Event:'Admissions Webinar',Date:'Feb 27',Type:'Webinar',Attendance:'211',Status:'Done'},
       {Event:'Research Symposium',Date:'Feb 20',Type:'In-Person',Attendance:'87',Status:'Done'},
-    ],
+    ]
   };
-  S.names = Object.keys(S.tabs);
-  launch('Demo', false);
+  S.names=Object.keys(S.tabs);
+  launch('Demo',false);
 }
 
 // ══════════════════════════════════════════════════════════
 //  LAUNCH
 // ══════════════════════════════════════════════════════════
-function launch(src, canRefresh) {
-  S.source = src;
-  S.filtered = {}; S.pages = {};
-  S.names.forEach(n => { S.filtered[n] = S.tabs[n]; S.pages[n] = 1; });
-
-  document.getElementById('home').style.display = 'none';
-  document.getElementById('dash').style.display = 'block';
-  document.getElementById('change-btn').style.display = '';
-  document.getElementById('export-btn').style.display = '';
-
-  const chipColors = {
-    'Google Sheets': 'background:#DCFCE7;color:#16A34A',
-    'Excel':         'background:#DBEAFE;color:#1D4ED8',
-    'CSV':           'background:#F3F4F6;color:#374151',
-    'Salesforce':    'background:#EDE9FE;color:#6D28D9',
-    'Demo':          'background:#FEF3C7;color:#92400E',
-  };
-  const chip = document.getElementById('chip');
-  chip.style.cssText = `display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;${chipColors[src] || chipColors['CSV']}`;
-  chip.innerHTML = `<span class="dot" style="${canRefresh ? '' : 'background:var(--gold)'}"></span>${src}`;
-
-  if (canRefresh) {
-    document.getElementById('refresh-btn').style.display = '';
-    if (S.timer) clearInterval(S.timer);
-    S.timer = setInterval(refreshSheet, 5 * 60 * 1000);
+function launch(src,canRefresh){
+  S.src=src;S.filtered={};S.pages={};
+  S.names.forEach(n=>{S.filtered[n]=S.tabs[n];S.pages[n]=1;});
+  document.getElementById('home').style.display='none';
+  document.getElementById('dash').style.display='block';
+  document.getElementById('cbtn').style.display='';
+  document.getElementById('ebtn').style.display='';
+  const chipCol={'Google Sheets':'background:#DCFCE7;color:#16A34A','Excel':'background:#DBEAFE;color:#1D4ED8','CSV':'background:#F3F4F6;color:#374151','Salesforce':'background:#EDE9FE;color:#6D28D9','Demo':'background:#FEF3C7;color:#92400E'};
+  const chip=document.getElementById('chip');
+  chip.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;'+(chipCol[src]||chipCol['CSV']);
+  chip.innerHTML='<span class="dot" style="'+(canRefresh?'':'background:var(--gold)')+'"></span>'+src;
+  if(canRefresh){
+    document.getElementById('rbtn').style.display='';
+    if(S.timer)clearInterval(S.timer);
+    S.timer=setInterval(doRefresh,5*60*1000);
   }
-
-  buildTabBar();
-  S.active = S.names[0] || '';
-  renderTab(S.active);
+  buildTabs();S.active=S.names[0]||'';renderTab(S.active);
 }
 
-function buildTabBar() {
-  document.getElementById('tab-bar').innerHTML = S.names.map((n, i) =>
-    `<button class="tab-btn${i === 0 ? ' on' : ''}" onclick="switchTab(${JSON.stringify(n)},this)">${escHtml(n)}</button>`
+function buildTabs(){
+  document.getElementById('tbar').innerHTML=S.names.map((n,i)=>
+    '<button class="tbtn'+(i===0?' on':'')+'" onclick="switchTab('+JSON.stringify(n)+',this)">'+escH(n)+'</button>'
   ).join('');
 }
 
-function switchTab(name, btn) {
-  destroyCharts();
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
-  if (btn) btn.classList.add('on');
-  S.active = name;
-  renderTab(name);
+function switchTab(name,btn){
+  killCharts();
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  S.active=name;renderTab(name);
 }
 
-async function refreshSheet() {
-  if (S.source !== 'Google Sheets' || !S.gsId) return;
-  spin(true, 'Refreshing data…');
-  try {
+async function doRefresh(){
+  if(S.src!=='Google Sheets'||!S.gsId)return;
+  loading(true,'Refreshing…');
+  try{
     await fetchGS(S.gsId);
-    S.filtered = {}; S.pages = {};
-    S.names.forEach(n => { S.filtered[n] = S.tabs[n]; S.pages[n] = 1; });
-    buildTabBar();
-    renderTab(S.active);
-  } catch (_) {}
-  spin(false);
+    S.filtered={};S.pages={};
+    S.names.forEach(n=>{S.filtered[n]=S.tabs[n];S.pages[n]=1;});
+    buildTabs();renderTab(S.active);
+  }catch(_){}
+  loading(false);
 }
 
 // ══════════════════════════════════════════════════════════
 //  RENDER TAB
 // ══════════════════════════════════════════════════════════
-function renderTab(name) {
-  const body = document.getElementById('dash-body');
-  const rows = S.tabs[name] || [];
-
-  if (!rows.length) {
-    body.innerHTML = '<div class="notice"><span>ℹ️</span><span>This tab has no data.</span></div>';
+function renderTab(name){
+  const body=document.getElementById('dbody');
+  const rows=S.tabs[name]||[];
+  if(!rows.length){
+    body.innerHTML='<div class="notice"><span>ℹ️</span><span>No data in this tab.</span></div>';
     return;
   }
+  const cols=Object.keys(rows[0]||{});
+  const ana=analyzeTab(rows);
 
-  const cols = Object.keys(rows[0] || {});
-  const ana = analyzeTab(rows);
-
-  let html = '';
-
-  // KPIs
-  if (ana.metrics.length) html += '<div class="kpi-row" id="kpi-row"></div>';
-
-  // Notice if no charts possible
-  if (!ana.metrics.length && !ana.categories.length) {
-    html += `<div class="notice"><span>ℹ️</span><div><b>No chart data detected</b> — this tab contains names, contact info, or free-text. The full searchable table is below.</div></div>`;
+  let html='';
+  if(ana.metrics.length)html+='<div class="krow" id="krow"></div>';
+  if(!ana.metrics.length&&!ana.categories.length){
+    html+='<div class="notice"><span>ℹ️</span><div><b>This tab contains text or identifier data</b> — names, IDs, contact info. No charts needed. Full searchable table below.</div></div>';
   }
+  if(ana.metrics.length||ana.categories.length)html+='<div class="cgrid" id="cgrid"></div>';
+  html+='<div class="tcard"><div class="ttbar"><input class="tsrch" placeholder="Search '+escH(name)+'…" oninput="doSearch(this.value,'+JSON.stringify(name)+')"><span class="tmeta" id="tmeta"></span></div><div class="twrap" id="twrap"></div><div class="tfoot"><span id="pginfo"></span><div class="pgrow" id="pgrow"></div></div></div>';
+  body.innerHTML=html;
 
-  // Chart area
-  if (ana.metrics.length || ana.categories.length) html += '<div class="chart-row" id="chart-row"></div>';
-
-  // Table
-  html += `<div class="tcard">
-    <div class="tbar">
-      <input class="tsearch" placeholder="Search ${escHtml(name)}…" oninput="doSearch(this.value,${JSON.stringify(name)})">
-      <span class="tmeta" id="tmeta"></span>
-    </div>
-    <div class="twrap" id="twrap"></div>
-    <div class="tfooter"><span id="pginfo"></span><div class="pgrow" id="pgrow"></div></div>
-  </div>`;
-
-  body.innerHTML = html;
-
-  try { if (ana.metrics.length) buildKPIs(ana.metrics, rows); } catch (_) {}
-  try { if (ana.metrics.length || ana.categories.length) buildCharts(ana, rows, name); } catch (_) {}
-  renderTable(name, 1);
+  try{if(ana.metrics.length)buildKPIs(ana.metrics,rows);}catch(_){}
+  try{if(ana.metrics.length||ana.categories.length)buildCharts(ana,rows,name);}catch(_){}
+  renderTable(name,1);
 }
 
-// ══════════════════════════════════════════════════════════
-//  KPI CARDS
-// ══════════════════════════════════════════════════════════
-function buildKPIs(metCols, rows) {
-  const wrap = document.getElementById('kpi-row');
-  if (!wrap) return;
-  const cards = metCols.slice(0, 5).map((col, i) => {
-    try {
-      const nums = rows.map(r => parseNum(r[col])).filter(v => v !== null);
-      if (!nums.length) return '';
-      const total = nums.reduce((a, b) => a + b, 0);
-      const isRate = /rate|%|avg|ratio|gpa|cgpa|bmi|score|health|sleep/i.test(col);
-      const display = isRate
-        ? (total / nums.length).toFixed(1)
-        : total >= 1e6 ? (total / 1e6).toFixed(1) + 'M'
-        : total >= 1e3 ? (total / 1e3).toFixed(1) + 'K'
-        : total.toLocaleString();
-      const sub = isRate ? `avg · ${nums.length} records` : `total · ${nums.length} records`;
-      return `<div class="kpi"><div class="kpi-bar" style="background:${PAL[i % PAL.length]}"></div><div class="kpi-lbl">${escHtml(col)}</div><div class="kpi-val">${display}</div><div class="kpi-sub">${sub}</div></div>`;
-    } catch (_) { return ''; }
-  }).filter(Boolean);
-  wrap.innerHTML = cards.join('') || '';
+// ── KPIs ─────────────────────────────────────────────────
+function buildKPIs(mets,rows){
+  const w=document.getElementById('krow');if(!w)return;
+  w.innerHTML=mets.slice(0,5).map((col,i)=>{
+    try{
+      const nums=rows.map(r=>toNum(r[col])).filter(v=>v!==null);
+      if(!nums.length)return '';
+      const sum=nums.reduce((a,b)=>a+b,0);
+      const isRate=/rate|ratio|pct|percent|gpa|cgpa|bmi|score|avg|sleep|health/i.test(col.toLowerCase());
+      const val=isRate?(sum/nums.length).toFixed(1):sum>=1e6?(sum/1e6).toFixed(1)+'M':sum>=1e3?(sum/1e3).toFixed(1)+'K':sum.toLocaleString();
+      const sub=isRate?'avg · '+nums.length+' records':'total · '+nums.length+' records';
+      return '<div class="kpi"><div class="kbar" style="background:'+PAL[i%PAL.length]+'"></div><div class="klbl">'+escH(col)+'</div><div class="kval">'+escH(val)+'</div><div class="ksub">'+sub+'</div></div>';
+    }catch(_){return '';}
+  }).filter(Boolean).join('');
 }
 
-// ══════════════════════════════════════════════════════════
-//  CHARTS
-// ══════════════════════════════════════════════════════════
-function buildCharts(ana, rows, tabName) {
-  const grid = document.getElementById('chart-row');
-  if (!grid) return;
+// ── Charts ────────────────────────────────────────────────
+function groupBy(rows,cat,met){
+  const g={};
+  for(const r of rows){
+    try{
+      const k=sv(r[cat])||'Unknown';
+      const v=toNum(r[met]);
+      if(v!==null)g[k]=(g[k]||0)+v;
+    }catch(_){}
+  }
+  return Object.fromEntries(Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,20));
+}
 
-  const defs = [];
-  const cats = ana.categories;
-  const mets = ana.metrics;
+function countBy(rows,cat){
+  const g={};
+  for(const r of rows){
+    try{const k=sv(r[cat])||'Unknown';g[k]=(g[k]||0)+1;}catch(_){}
+  }
+  return Object.fromEntries(Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,20));
+}
 
-  try {
-    if (cats.length && mets.length) {
-      // Bar: metric grouped by category
-      const cat = cats[0], met = mets[0];
-      const g = groupBy(rows, cat, met);
-      if (Object.keys(g).length > 1)
-        defs.push({ title: `${met} by ${cat}`, type: 'bar', g, ci: 0 });
-
-      // Donut: same or second category
-      const cat2 = cats.length > 1 ? cats[1] : cats[0];
-      const g2 = groupBy(rows, cat2, met);
-      const keys2 = Object.keys(g2);
-      if (keys2.length > 1 && keys2.length <= 15)
-        defs.push({ title: `${met} breakdown`, type: 'doughnut', g: g2, ci: 1 });
-
-      // Second metric bar
-      if (mets.length > 1) {
-        const g3 = groupBy(rows, cat, mets[1]);
-        if (Object.keys(g3).length > 1)
-          defs.push({ title: `${mets[1]} by ${cat}`, type: 'bar', g: g3, ci: 2 });
+function buildCharts(ana,rows,tab){
+  const grid=document.getElementById('cgrid');if(!grid)return;
+  const defs=[];
+  const cats=ana.categories,mets=ana.metrics;
+  try{
+    if(cats.length&&mets.length){
+      const g1=groupBy(rows,cats[0],mets[0]);
+      if(Object.keys(g1).length>1)defs.push({t:mets[0]+' by '+cats[0],type:'bar',g:g1,ci:0});
+      const cat2=cats.length>1?cats[1]:cats[0];
+      const g2=groupBy(rows,cat2,mets[0]);
+      const k2=Object.keys(g2);
+      if(k2.length>1&&k2.length<=15&&(cats.length>1||defs.length===0))
+        defs.push({t:'Breakdown by '+cat2,type:'doughnut',g:g2,ci:1});
+      if(mets.length>1){
+        const g3=groupBy(rows,cats[0],mets[1]);
+        if(Object.keys(g3).length>1)defs.push({t:mets[1]+' by '+cats[0],type:'bar',g:g3,ci:2});
       }
-
-    } else if (cats.length && !mets.length) {
-      // Count distribution
-      const cat = cats[0];
-      const g = {};
-      rows.forEach(r => { const k = safe(r[cat]) || 'Unknown'; g[k] = (g[k] || 0) + 1; });
-      const keys = Object.keys(g);
-      if (keys.length > 1 && keys.length <= 20) {
-        defs.push({ title: `Records by ${cat}`, type: 'bar', g, ci: 0 });
-        if (keys.length <= 12)
-          defs.push({ title: `Distribution by ${cat}`, type: 'doughnut', g, ci: 1 });
-      }
-      if (cats.length > 1) {
-        const g2 = {};
-        rows.forEach(r => { const k = safe(r[cats[1]]) || 'Unknown'; g2[k] = (g2[k] || 0) + 1; });
-        if (Object.keys(g2).length > 1 && Object.keys(g2).length <= 12)
-          defs.push({ title: `Distribution by ${cats[1]}`, type: 'doughnut', g: g2, ci: 2 });
+    }else if(cats.length&&!mets.length){
+      const g1=countBy(rows,cats[0]);
+      const k1=Object.keys(g1);
+      if(k1.length>1&&k1.length<=20)defs.push({t:'Records by '+cats[0],type:'bar',g:g1,ci:0});
+      if(cats.length>1){
+        const g2=countBy(rows,cats[1]);
+        const k2=Object.keys(g2);
+        if(k2.length>1&&k2.length<=12)defs.push({t:'Distribution by '+cats[1],type:'doughnut',g:g2,ci:1});
+      }else if(k1.length<=12&&k1.length>1){
+        defs.push({t:'Distribution by '+cats[0],type:'doughnut',g:g1,ci:1});
       }
     }
-  } catch (_) { /* chart building failed gracefully */ }
+  }catch(_){}
 
-  if (!defs.length) { grid.style.display = 'none'; return; }
+  if(!defs.length){grid.style.display='none';return;}
+  const cls=defs.length===1?'g1':defs.length===2?'g2':'g3';
+  grid.className='cgrid '+cls;
+  grid.innerHTML=defs.map((_,i)=>'<div class="cc"><div class="cct" id="ct'+i+'"></div><canvas id="cv'+i+'" style="max-height:220px"></canvas></div>').join('');
 
-  const cls = defs.length === 1 ? 'g1' : defs.length === 2 ? 'g2' : 'g3';
-  grid.className = `chart-row ${cls}`;
-  grid.innerHTML = defs.map((_, i) =>
-    `<div class="ccard"><div class="ccard-t" id="ct${i}"></div><canvas id="cv${i}" style="max-height:220px"></canvas></div>`
-  ).join('');
-
-  defs.forEach((d, i) => {
-    try {
-      const el = document.getElementById('ct' + i);
-      const cv = document.getElementById('cv' + i);
-      if (!el || !cv) return;
-      el.textContent = d.title;
-      const labels = Object.keys(d.g);
-      const data = labels.map(l => d.g[l]);
-      const col = PAL[d.ci % PAL.length];
-      const inst = new Chart(cv.getContext('2d'), {
-        type: d.type,
-        data: {
-          labels,
-          datasets: [{
-            data,
-            backgroundColor: d.type === 'doughnut' ? PAL.slice(0, labels.length) : col + 'CC',
-            borderColor:      d.type === 'doughnut' ? undefined : col,
-            borderWidth:      d.type === 'doughnut' ? 0 : 1.5,
-            borderRadius:     d.type === 'bar' ? 5 : 0,
-            hoverOffset: 4,
-          }]
+  defs.forEach((d,i)=>{
+    try{
+      const el=document.getElementById('ct'+i);
+      const cv=document.getElementById('cv'+i);
+      if(!el||!cv)return;
+      el.textContent=d.t;
+      const labels=Object.keys(d.g),data=labels.map(l=>d.g[l]);
+      const col=PAL[d.ci%PAL.length];
+      const inst=new Chart(cv.getContext('2d'),{
+        type:d.type,
+        data:{labels,datasets:[{data,backgroundColor:d.type==='doughnut'?PAL.slice(0,labels.length):col+'CC',borderColor:d.type==='doughnut'?undefined:col,borderWidth:d.type==='doughnut'?0:1.5,borderRadius:d.type==='bar'?5:0,hoverOffset:4}]},
+        options:{responsive:true,plugins:{
+          legend:{display:d.type==='doughnut',position:'bottom',labels:{font:{family:'DM Sans',size:10},color:'#6B7280',boxWidth:10,padding:8}},
+          tooltip:{callbacks:{label:c=>' '+c.label+': '+Number(c.raw).toLocaleString()}}
         },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: d.type === 'doughnut',
-              position: 'bottom',
-              labels: { font: { family: 'DM Sans', size: 10 }, color: '#6B7280', boxWidth: 10, padding: 8 }
-            },
-            tooltip: { callbacks: { label: c => ` ${c.label}: ${Number(c.raw).toLocaleString()}` } }
-          },
-          scales: d.type === 'bar' ? {
-            x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 10 }, color: '#6B7280', maxRotation: 35, maxTicksLimit: 12 } },
-            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: 'DM Mono', size: 10 }, color: '#6B7280', beginAtZero: true } }
-          } : undefined,
-          cutout: d.type === 'doughnut' ? '60%' : undefined,
-        }
+        scales:d.type==='bar'?{
+          x:{grid:{display:false},ticks:{font:{family:'DM Sans',size:10},color:'#6B7280',maxRotation:35,maxTicksLimit:12}},
+          y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'DM Mono',size:10},color:'#6B7280',beginAtZero:true}}
+        }:undefined,
+        cutout:d.type==='doughnut'?'60%':undefined}
       });
-      S.charts['c' + tabName + i] = inst;
-    } catch (_) { /* single chart failed — skip it */ }
+      S.charts['c'+tab+i]=inst;
+    }catch(_){}
   });
 }
 
-function groupBy(rows, catCol, metCol) {
-  const g = {};
-  rows.forEach(r => {
-    try {
-      const k = safe(r[catCol]) || 'Unknown';
-      const v = parseNum(r[metCol]);
-      if (v !== null) g[k] = (g[k] || 0) + v;
-    } catch (_) {}
-  });
-  // Sort by value descending, limit to top 20
-  return Object.fromEntries(
-    Object.entries(g).sort((a, b) => b[1] - a[1]).slice(0, 20)
-  );
-}
-
-// ══════════════════════════════════════════════════════════
-//  TABLE
-// ══════════════════════════════════════════════════════════
-function renderTable(tabName, page) {
-  try {
-    const rows = S.filtered[tabName] || S.tabs[tabName] || [];
-    const allRows = S.tabs[tabName] || [];
-    const cols = Object.keys((allRows[0]) || {});
-    if (!cols.length) return;
-
-    // Detect metric cols for right-align (re-use classifyCol on sample)
-    const metCols = new Set(
-      cols.filter(col => {
-        try { return classifyCol(col, allRows) === 'metric'; } catch (_) { return false; }
-      })
-    );
-
-    const total = rows.length;
-    const totalPg = Math.max(1, Math.ceil(total / PAGE_SZ));
-    page = Math.min(Math.max(1, page || 1), totalPg);
-    S.pages[tabName] = page;
-
-    const slice = rows.slice((page - 1) * PAGE_SZ, page * PAGE_SZ);
-
-    const thead = `<thead><tr>${cols.map(c => `<th class="${metCols.has(c) ? 'r' : ''}">${escHtml(c)}</th>`).join('')}</tr></thead>`;
-    const tbody = `<tbody>${slice.map(r =>
-      `<tr>${cols.map(c => `<td class="${metCols.has(c) ? 'r' : ''}">${escHtml(safe(r[c]))}</td>`).join('')}</tr>`
-    ).join('')}</tbody>`;
-
-    const wrap = document.getElementById('twrap');
-    if (wrap) wrap.innerHTML = `<table>${thead}${tbody}</table>`;
-
-    const meta = document.getElementById('tmeta');
-    if (meta) meta.textContent = `${total.toLocaleString()} rows · ${cols.length} columns`;
-
-    const pginfo = document.getElementById('pginfo');
-    if (pginfo) pginfo.textContent = `${((page - 1) * PAGE_SZ + 1).toLocaleString()}–${Math.min(page * PAGE_SZ, total).toLocaleString()} of ${total.toLocaleString()}`;
-
-    buildPager(tabName, page, totalPg);
-  } catch (_) {
-    const wrap = document.getElementById('twrap');
-    if (wrap) wrap.innerHTML = '<div style="padding:20px;color:var(--muted);text-align:center">Could not render table</div>';
+// ── Table ─────────────────────────────────────────────────
+function renderTable(tabName,page){
+  try{
+    const rows=S.filtered[tabName]||S.tabs[tabName]||[];
+    const allRows=S.tabs[tabName]||[];
+    const cols=Object.keys((allRows[0])||{});
+    if(!cols.length)return;
+    const ana=analyzeTab(allRows);
+    const metSet=new Set(ana.metrics);
+    const total=rows.length;
+    const totPg=Math.max(1,Math.ceil(total/PGSZ));
+    page=Math.min(Math.max(1,page||1),totPg);
+    S.pages[tabName]=page;
+    const slice=rows.slice((page-1)*PGSZ,page*PGSZ);
+    const head='<thead><tr>'+cols.map(c=>'<th class="'+(metSet.has(c)?'r':'')+'">'+escH(c)+'</th>').join('')+'</tr></thead>';
+    const body='<tbody>'+slice.map(r=>'<tr>'+cols.map(c=>'<td class="'+(metSet.has(c)?'r':'')+'">'+escH(sv(r[c]))+'</td>').join('')+'</tr>').join('')+'</tbody>';
+    const w=document.getElementById('twrap');if(w)w.innerHTML='<table>'+head+body+'</table>';
+    const m=document.getElementById('tmeta');if(m)m.textContent=total.toLocaleString()+' rows · '+cols.length+' cols';
+    const pi=document.getElementById('pginfo');if(pi)pi.textContent=((page-1)*PGSZ+1).toLocaleString()+'–'+Math.min(page*PGSZ,total).toLocaleString()+' of '+total.toLocaleString();
+    buildPager(tabName,page,totPg);
+  }catch(_){
+    const w=document.getElementById('twrap');
+    if(w)w.innerHTML='<div style="padding:20px;text-align:center;color:var(--mut)">Could not render table</div>';
   }
 }
 
-function buildPager(tabName, page, totalPg) {
-  const wrap = document.getElementById('pgrow');
-  if (!wrap) return;
-  const pages = getPageNums(page, totalPg);
-  wrap.innerHTML = pages.map(p =>
-    p === null
-      ? `<button class="pgbtn" disabled>…</button>`
-      : `<button class="pgbtn${p === page ? ' on' : ''}" onclick="goPage(${p},${JSON.stringify(tabName)})">${p}</button>`
-  ).join('');
+function buildPager(tab,page,tot){
+  const w=document.getElementById('pgrow');if(!w)return;
+  let pages=[];
+  if(tot<=9)for(let p=1;p<=tot;p++)pages.push(p);
+  else if(page<=4)pages=[1,2,3,4,5,null,tot];
+  else if(page>=tot-3)pages=[1,null,tot-4,tot-3,tot-2,tot-1,tot];
+  else pages=[1,null,page-1,page,page+1,null,tot];
+  w.innerHTML=pages.map(p=>p===null?'<button class="pgb" disabled>…</button>':'<button class="pgb'+(p===page?' on':'')+'" onclick="goPage('+p+','+JSON.stringify(tab)+')">'+p+'</button>').join('');
 }
 
-function getPageNums(page, total) {
-  if (total <= 9) return Array.from({ length: total }, (_, i) => i + 1);
-  if (page <= 4) return [1, 2, 3, 4, 5, null, total];
-  if (page >= total - 3) return [1, null, total - 4, total - 3, total - 2, total - 1, total];
-  return [1, null, page - 1, page, page + 1, null, total];
+function goPage(p,tab){S.pages[tab]=p;renderTable(tab,p);}
+
+function doSearch(q,tab){
+  const rows=S.tabs[tab]||[];
+  S.filtered[tab]=q.trim()?rows.filter(r=>Object.values(r).some(v=>sv(v).toLowerCase().includes(q.toLowerCase()))):rows;
+  S.pages[tab]=1;renderTable(tab,1);
 }
 
-function goPage(p, tabName) {
-  S.pages[tabName] = p;
-  renderTable(tabName, p);
+// ── Nav helpers ───────────────────────────────────────────
+function openPanel(id){
+  document.getElementById('picker').style.display='none';
+  document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('show'));
+  const el=document.getElementById('pnl-'+id);if(el)el.classList.add('show');
+}
+function closePanel(){
+  document.getElementById('picker').style.display='grid';
+  document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('show'));
+}
+function goHome(){
+  killCharts();if(S.timer)clearInterval(S.timer);
+  S.tabs={};S.names=[];S.filtered={};S.pages={};S.charts={};
+  document.getElementById('dash').style.display='none';
+  document.getElementById('home').style.display='';
+  closePanel();
+  ['rbtn','cbtn','ebtn'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('chip').style.display='none';
+}
+function killCharts(){Object.values(S.charts).forEach(c=>{try{c.destroy();}catch(_){}});S.charts={};}
+
+// ── File drag/drop ────────────────────────────────────────
+function dzOvr(e,id){e.preventDefault();document.getElementById(id).classList.add('drag');}
+function dzOut(id){document.getElementById(id).classList.remove('drag');}
+function dzDrp(e,type){e.preventDefault();dzOut('dz-'+type);setFile(e.dataTransfer.files[0],type);}
+function fPick(e,type){setFile((e.target.files||[])[0],type);}
+function setFile(f,type){
+  if(!f)return;S.files[type]=f;
+  const fn=document.getElementById('fn-'+type);const ok=document.getElementById('ok-'+type);
+  if(fn)fn.textContent=f.name;if(ok)ok.style.display='flex';
 }
 
-function doSearch(q, tabName) {
-  try {
-    const rows = S.tabs[tabName] || [];
-    S.filtered[tabName] = q.trim()
-      ? rows.filter(r => Object.values(r).some(v => safe(v).toLowerCase().includes(q.toLowerCase())))
-      : rows;
-    S.pages[tabName] = 1;
-    renderTable(tabName, 1);
-  } catch (_) {}
+// ── UI utils ──────────────────────────────────────────────
+function loading(on,msg){
+  document.getElementById('ovl').style.display=on?'flex':'none';
+  if(msg)document.getElementById('sptxt').textContent=msg;
 }
+function showErr(id,msg){const e=document.getElementById(id+'-err');if(!e)return;e.style.display='block';e.textContent=msg;}
+function hideErr(id){const e=document.getElementById(id+'-err');if(e)e.style.display='none';}
 
-// ══════════════════════════════════════════════════════════
-//  NAVIGATION HELPERS
-// ══════════════════════════════════════════════════════════
-function showPanel(id) {
-  document.getElementById('picker').style.display = 'none';
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
-  const el = document.getElementById('panel-' + id);
-  if (el) el.classList.add('show');
-}
-function backHome() {
-  document.getElementById('picker').style.display = 'grid';
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
-}
-function goHome() {
-  destroyCharts();
-  if (S.timer) clearInterval(S.timer);
-  S.tabs = {}; S.names = []; S.filtered = {}; S.pages = {}; S.charts = {};
-  document.getElementById('dash').style.display = 'none';
-  document.getElementById('home').style.display = '';
-  backHome();
-  ['refresh-btn', 'change-btn', 'export-btn'].forEach(id => document.getElementById(id).style.display = 'none');
-  document.getElementById('chip').style.display = 'none';
-}
-function destroyCharts() {
-  Object.values(S.charts).forEach(c => { try { c.destroy(); } catch (_) {} });
-  S.charts = {};
-}
-
-// ══════════════════════════════════════════════════════════
-//  FILE DRAG/DROP
-// ══════════════════════════════════════════════════════════
-function dzOver(e, id) { e.preventDefault(); document.getElementById(id).classList.add('drag'); }
-function dzOut(id) { document.getElementById(id).classList.remove('drag'); }
-function dzDrop(e, type) { e.preventDefault(); dzOut('dz-' + type); setFile(e.dataTransfer.files[0], type); }
-function filePick(e, type) { setFile((e.target.files || [])[0], type); }
-function setFile(f, type) {
-  if (!f) return;
-  S.files[type] = f;
-  const fn = document.getElementById('fn-' + type);
-  const ok = document.getElementById('ok-' + type);
-  if (fn) fn.textContent = f.name;
-  if (ok) ok.style.display = 'flex';
-}
-
-// ══════════════════════════════════════════════════════════
-//  UI UTILITIES
-// ══════════════════════════════════════════════════════════
-function spin(on, msg) {
-  document.getElementById('overlay').style.display = on ? 'flex' : 'none';
-  if (msg) document.getElementById('spin-txt').textContent = msg;
-}
-function showErr(id, msg) {
-  const el = document.getElementById(id + '-err');
-  if (!el) return;
-  el.style.display = 'block';
-  el.textContent = msg;
-}
-function hideErr(id) {
-  const el = document.getElementById(id + '-err');
-  if (el) el.style.display = 'none';
-}
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ══════════════════════════════════════════════════════════
-//  AUTO-RESTORE GOOGLE SHEETS SESSION
-// ══════════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', async () => {
-  const saved = localStorage.getItem('ssb_gs');
-  if (saved) {
-    const input = document.getElementById('gs-id');
-    if (input) input.value = saved;
-    S.gsId = saved;
-    spin(true, 'Restoring your sheet…');
-    try {
-      await fetchGS(saved);
-      spin(false);
-      launch('Google Sheets', true);
-    } catch (_) {
-      spin(false);
-      // Silently fall through to home screen
-    }
+// ── Auto-restore ──────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',async()=>{
+  const saved=localStorage.getItem('ssb_gs');
+  if(saved){
+    const el=document.getElementById('gsid');if(el)el.value=saved;
+    S.gsId=saved;
+    loading(true,'Restoring your sheet…');
+    try{await fetchGS(saved);loading(false);launch('Google Sheets',true);}
+    catch(_){loading(false);}
   }
 });
 </script>
