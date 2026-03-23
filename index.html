@@ -296,42 +296,39 @@ const S = {
 
 // ══════════════════════════════════════════════════════════
 //  INTELLIGENCE ENGINE
-//  Classify each column using name + value sampling
+//  Rule: be inclusive. Show things. Only skip proven junk.
 // ══════════════════════════════════════════════════════════
 
-// Columns to ALWAYS skip for charts/KPIs (just show in table)
-const IS_JUNK = [
-  /phone|mobile|contact.?no|contact.?num|\btel\b|fax|\bcell\b/i,
-  /\b(sr|s|serial|seq)\.?\s*no\.?\s*$/i,
-  /\b(roll|reg|registration|enrollment)\.?\s*no\.?\s*$/i,
-  /^\s*(id|uid|uuid|_id)\s*$/i,
-  /\b(ref|reference)\.?\s*(no|code|id)\s*$/i,
-  /\b(timestamp|datetime|created_at|updated_at)\s*$/i,
-  /\b(zip|postal|pin)\.?\s*code\b/i,
-  /\b(email|e.mail|url|link|website|webpage)\b/i,
-  /\b(passport|aadhar|ssn|pan\.?\s*no)\b/i,
+// Column names that are definitely junk — never chart or KPI these
+const JUNK_NAMES = [
+  /\bphone\b|\bmobile\b|contact.?n[ou]|\btel\b|\bfax\b|\bcell\b/i,
+  /^(sr|s|serial|seq)\.?\s*no\.?$/i,
+  /^(roll|reg|registration)\.?\s*no\.?$/i,
+  /^(id|_id|uid|uuid)$/i,
+  /\b(email|e.mail|url|link|website)\b/i,
+  /\b(zip|postal|pin)\.?code\b/i,
+  /\b(password|token|secret)\b/i,
 ];
 
-// Column names that signal a METRIC (meaningful number to show)
-const IS_METRIC = [
-  /\b(count|total|sum|amount|amt)\b/i,
-  /\bnum(ber)?\s+(of|students|courses)\b/i,
-  /\b(students|enrollment|headcount|registrations)\b/i,
-  /\b(attendance|attendees|participants)\b/i,
-  /\b(applicants?|applications?|admits?|enrolled)\b/i,
+// Column names that strongly signal a metric
+const METRIC_NAMES = [
+  /\b(count|total|sum|amount|amt|num(ber)?)\b/i,
+  /\b(students?|enrollment|headcount|registrations?)\b/i,
+  /\b(attendance|attendees?|participants?)\b/i,
+  /\b(applicants?|applications?|admits?|admitted|enrolled)\b/i,
   /\b(revenue|income|expense|budget|fee|salary|cost|price|payment)\b/i,
-  /\b(score|gpa|cgpa|sgpa|marks|grade|rating|rank|points)\b/i,
-  /\b(seats|capacity|openings|vacancies)\b/i,
-  /\b(credits|units|hours|days|weeks|months)\b/i,
+  /\b(score|gpa|cgpa|sgpa|marks|grade|rating|rank|points?)\b/i,
+  /\b(seats?|capacity|openings?|vacanc)\b/i,
+  /\b(credits?|units?|hours?|days?|weeks?|months?)\b/i,
   /\b(bmi|weight|height)\b/i,
   /\b(health|sleep|mental|physical)\b/i,
-  /\b(completed|passed|failed|dropouts)\b/i,
+  /\b(completed|passed|failed|dropouts?)\b/i,
   /\b(duration|length|size|volume)\b/i,
-  /\b(age)\b(?!.*cat)/i,
+  /\bage\b(?!.*cat)/i,
 ];
 
-// Column names that signal a CATEGORY (good for grouping)
-const IS_CAT = [
+// Column names or value patterns that make good chart groupers
+const CAT_NAMES = [
   /\b(year|semester|term|session|batch|cohort)\b/i,
   /\b(division|section|class|group)\b/i,
   /\b(program|course|degree|major|stream|branch|dept|department)\b/i,
@@ -339,104 +336,108 @@ const IS_CAT = [
   /\b(type|category|kind|mode|format)\b/i,
   /\b(gender|sex)\b/i,
   /\b(campus|location|city|region|site)\b/i,
-  /\b(country|nation|state)\b/i,
+  /\b(country|nation)\b/i,
   /\b(race|ethnicity)\b/i,
-  /\b(age.?cat|age.?group|age.?range)\b/i,
+  /\b(age.?cat|age.?group|age.?range|age.?band)\b/i,
   /\b(diabetic|smoking|drinking|disease|condition|disorder)\b/i,
   /\b(gen.?health|general.?health)\b/i,
+  /\b(activity|active)\b/i,
 ];
 
 function safe(v) {
-  // Convert any value to a clean string
-  try {
-    if (v === null || v === undefined) return '';
-    return String(v).trim();
-  } catch (_) { return ''; }
+  try { return (v === null || v === undefined) ? '' : String(v).trim(); }
+  catch (_) { return ''; }
 }
 
 function parseNum(v) {
   try {
     const n = parseFloat(safe(v).replace(/[^0-9.\-]/g, ''));
-    return isFinite(n) ? n : null;
+    return (isFinite(n) && !isNaN(n)) ? n : null;
   } catch (_) { return null; }
 }
 
 function classifyCol(name, allRows) {
-  // Sample up to SAMPLE_SZ rows for speed on huge datasets
-  const sample = allRows.length > SAMPLE_SZ
-    ? allRows.slice(0, Math.floor(SAMPLE_SZ / 2)).concat(allRows.slice(-Math.floor(SAMPLE_SZ / 2)))
-    : allRows;
-
-  const vals = sample.map(r => safe(r[name])).filter(v => v !== '');
-  if (!vals.length) return 'empty';
-
-  const n = name.trim();
-
-  // 1. Always skip secrets/passwords
-  if (/password|token|secret/i.test(n)) return 'skip';
-
-  // 2. Yes/No booleans → category
-  const unique = [...new Set(vals)];
-  if (unique.length <= 6 && unique.every(v => /^(yes|no|true|false|y|n|1|0)$/i.test(v))) {
-    return 'category';
+  // Sample smartly — take spread across the dataset
+  let sample;
+  if (allRows.length <= 300) {
+    sample = allRows;
+  } else {
+    const step = Math.floor(allRows.length / 200);
+    sample = allRows.filter((_, i) => i % step === 0).slice(0, 200);
   }
 
-  // 3. Phone-number-like values → identifier
-  const phoneLike = vals.slice(0, 30).filter(v => /^[\d\s\-\+\(\)]{7,16}$/.test(v) && /\d{7,}/.test(v.replace(/\D/g, ''))).length;
-  if (phoneLike / Math.min(vals.length, 30) > 0.55) return 'identifier';
+  const name_clean = (name || '').trim();
+  const vals = sample.map(r => safe((r || {})[name])).filter(v => v !== '');
+  if (!vals.length) return 'empty';
 
-  // 4. Junk column name → identifier
-  if (IS_JUNK.some(p => p.test(n))) return 'identifier';
+  // ── RULE 1: Junk column name → identifier (table-only) ──
+  if (JUNK_NAMES.some(p => p.test(name_clean))) return 'identifier';
 
-  // 5. Numeric analysis
+  // ── RULE 2: All Yes/No/True/False → category ─────────────
+  const unique = [...new Set(vals)];
+  const allBool = unique.length <= 8 && unique.every(v => /^(yes|no|true|false|y|n|1|0)$/i.test(v));
+  if (allBool) return 'category';
+
+  // ── RULE 3: Phone number values → identifier ──────────────
+  // 7+ consecutive digits, not a normal metric number
+  const phoneLike = vals.slice(0, 50).filter(v => {
+    const digits = v.replace(/[\s\-\+\(\)]/g, '');
+    return /^\d{7,16}$/.test(digits);
+  }).length / Math.min(vals.length, 50) > 0.55;
+  if (phoneLike) return 'identifier';
+
+  // ── RULE 4: Numeric analysis ──────────────────────────────
   const nums = vals.map(parseNum).filter(v => v !== null);
   const numRatio = nums.length / vals.length;
 
-  if (numRatio >= 0.75) {
+  if (numRatio >= 0.7) {
     const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
-    const uRatio = unique.length / vals.length;
-    const allUnique = uRatio > 0.9 && vals.length > 15;
+    const max = Math.max(...nums);
 
-    // Named metric → metric
-    if (IS_METRIC.some(p => p.test(n))) return 'metric';
-    // Small, non-unique numbers → metric
-    if (!allUnique && avg <= 50000) return 'metric';
-    // Otherwise looks like an ID
-    return 'identifier';
+    // Named metric → always metric
+    if (METRIC_NAMES.some(p => p.test(name_clean))) return 'metric';
+
+    // Very large numbers (> 1M and no metric name) → likely ID/phone
+    if (max > 1_000_000) return 'identifier';
+
+    // Small to medium numbers → metric (BMI=28, SleepTime=7, etc.)
+    return 'metric';
   }
 
-  // 6. Age range strings "18-24", "80 or older"
-  const ageRanges = vals.slice(0, 20).filter(v => /^\d{2}\s*[-–]\s*\d{2}$|^\d+\s+or\s+(older|younger)$/i.test(v));
-  if (ageRanges.length >= Math.min(3, vals.length * 0.3)) return 'category';
+  // ── RULE 5: Named category ────────────────────────────────
+  if (CAT_NAMES.some(p => p.test(name_clean))) return 'category';
 
-  // 7. Named category or low cardinality → category
-  const isCatName = IS_CAT.some(p => p.test(n));
-  const lowCard = unique.length <= 40 && (unique.length / vals.length) < 0.45;
-  if (isCatName || lowCard) return 'category';
+  // ── RULE 6: Age-range strings like "55-59", "80 or older" ─
+  const ageRanges = vals.slice(0, 30).filter(v =>
+    /^\d{2}\s*[-–]\s*\d{2}$|^\d+\s+or\s+(older|younger)$/i.test(v)
+  ).length;
+  if (ageRanges >= Math.min(3, vals.length * 0.2)) return 'category';
 
-  // 8. Date-like
-  if (vals.some(v => /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(v))) {
-    return 'date';
-  }
+  // ── RULE 7: Low cardinality → category ───────────────────
+  // Few unique values = good grouper regardless of name
+  const cardinalityRatio = unique.length / vals.length;
+  if (unique.length <= 30 && cardinalityRatio < 0.5) return 'category';
 
-  // 9. Everything else is text — show in table only
+  // ── RULE 8: Date-like ─────────────────────────────────────
+  const isDate = vals.some(v =>
+    /\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(v)
+  );
+  if (isDate) return 'date';
+
+  // ── RULE 9: Default → text (show in table only) ───────────
   return 'text';
 }
 
 function analyzeTab(rows) {
   const out = { metrics: [], categories: [], identifiers: [], dates: [], text: [] };
   if (!rows || !rows.length) return out;
-
   const cols = Object.keys(rows[0] || {});
   cols.forEach(col => {
     try {
       const type = classifyCol(col, rows);
       if (type === 'empty' || type === 'skip') return;
-      if (out[type]) out[type].push(col);
-      else out.text.push(col);
-    } catch (_) {
-      out.text.push(col);
-    }
+      (out[type] || out.text).push(col);
+    } catch (_) { out.text.push(col); }
   });
   return out;
 }
