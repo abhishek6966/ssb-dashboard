@@ -314,7 +314,7 @@ function classify(col,rows){
 function analyze(rows){
   const out={metric:[],category:[],identifier:[],text:[]};
   if(!rows||!rows.length)return out;
-  Object.keys(rows[0]||{}).forEach(col=>{try{const t=classify(col,rows);if(t==='empty')return;(out[t]||out.text).push(col);}catch(_){out.text.push(col);});
+  Object.keys(rows[0]||{}).forEach(col=>{try{const t=classify(col,rows);if(t==='empty')return;(out[t]||out.text).push(col);}catch(_){out.text.push(col);}});
   return out;
 }
 
