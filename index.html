@@ -388,44 +388,82 @@ async function connectGS(){
 
 async function fetchGS(id,manualTabs){
   S.tabs={};S.names=[];
+  load(true,'Loading sheets…');
 
-  // APPROACH: always fetch by GID (0,1,2,3...)
-  // GID is reliable. Name-based fetch often returns sheet1 for unknown names.
-  // We collect all unique sheets by GID, then label them with manual names if provided.
+  // Step 1: Get real GID values by scraping the sheet's HTML
+  // Google Sheets stores GIDs as arbitrary numbers (e.g. 151624135), NOT 0,1,2,3
+  // The pubhtml or export page lists all GIDs in its HTML
+  let gids=[];
+  try{
+    // The /export page has all sheet GIDs in hidden input or links
+    const r=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/pubhtml');
+    if(r.ok){
+      const html=await r.text();
+      // pubhtml contains: gid=NNNNNN in multiple places
+      const matches=[...html.matchAll(/[?&#]gid=(\d+)/g)];
+      const found=[];
+      matches.forEach(function(m){if(!found.includes(m[1]))found.push(m[1]);});
+      if(found.length){gids=found;console.log('GIDs from pubhtml:',gids);}
+    }
+  }catch(e){console.warn('pubhtml GID fetch failed:',e.message);}
 
-  load(true,'Loading sheets from Google Sheets…');
-  const sheetData=[]; // [{gid, csv}]
+  // Fallback: try the edit page HTML (works if sheet is "anyone with link can view")
+  if(!gids.length){
+    try{
+      const r=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/edit');
+      if(r.ok){
+        const html=await r.text();
+        const matches=[...html.matchAll(/"gid"\s*:\s*"?(\d+)"?/g)];
+        const found=[];
+        matches.forEach(function(m){if(!found.includes(m[1]))found.push(m[1]);});
+        if(found.length){gids=found;console.log('GIDs from edit page:',gids);}
+      }
+    }catch(e){console.warn('edit page failed:',e.message);}
+  }
 
+  // Step 2: If we got real GIDs, fetch each one
+  if(gids.length){
+    const tabs=manualTabs&&manualTabs.length?manualTabs:[];
+    let sheetIndex=0;
+    for(let g=0;g<gids.length;g++){
+      try{
+        load(true,'Reading sheet '+(g+1)+' of '+gids.length+'…');
+        const r=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv&gid='+gids[g]);
+        if(!r.ok)continue;
+        const raw=(await r.text()).trim();
+        if(!raw||raw.length<5)continue;
+        const rows=cleanRows(Papa.parse(raw,{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
+        if(rows.length){
+          const name=tabs[sheetIndex]?tabs[sheetIndex].trim():('Sheet'+(sheetIndex+1));
+          S.tabs[name]=rows;S.names.push(name);sheetIndex++;
+        }
+      }catch(_){}
+    }
+    if(S.names.length){console.log('Loaded sheets:',S.names);return;}
+  }
+
+  // Step 3: Last resort — sequential GID scan 0..29 with uniqueness check
+  console.log('Falling back to sequential GID scan…');
+  const seen=[];
+  const foundGids=[];
   for(let gid=0;gid<30;gid++){
     try{
-      const url='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv&gid='+gid;
-      const r=await fetch(url);
-      if(!r.ok)break;
+      const r=await fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv&gid='+gid);
+      if(!r.ok)continue;
       const raw=(await r.text()).trim();
-      // Empty or too short = no sheet here
-      if(!raw||raw.length<5)break;
-      // Check it's not a duplicate of a previous sheet (Google returns sheet1 for invalid GIDs)
-      const isDup=sheetData.length>0&&sheetData.some(function(s){return s.csv===raw;});
-      if(isDup)break; // hit a repeated/nonexistent sheet — stop
-      sheetData.push({gid:gid,csv:raw});
-    }catch(_){break;}
-  }
-
-  console.log('Found '+sheetData.length+' unique sheets by GID scan');
-
-  // Label each sheet: use manual names if provided, else Sheet1, Sheet2...
-  const tabs=manualTabs&&manualTabs.length?manualTabs:[];
-
-  for(let i=0;i<sheetData.length;i++){
-    const name=tabs[i]?tabs[i].trim():('Sheet'+(i+1));
-    load(true,'Parsing: '+name+'…');
-    try{
-      const rows=cleanRows(Papa.parse(sheetData[i].csv,{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
-      if(rows.length){S.tabs[name]=rows;S.names.push(name);}
+      if(!raw||raw.length<5)continue;
+      if(!seen.includes(raw)){seen.push(raw);foundGids.push(gid);}
     }catch(_){}
   }
+  const tabs=manualTabs&&manualTabs.length?manualTabs:[];
+  for(let i=0;i<seen.length;i++){
+    const name=tabs[i]?tabs[i].trim():('Sheet'+(i+1));
+    const rows=cleanRows(Papa.parse(seen[i],{header:true,skipEmptyLines:true,dynamicTyping:false}).data||[]);
+    if(rows.length){S.tabs[name]=rows;S.names.push(name);}
+  }
 
-  if(!S.names.length)throw new Error('No data found. Make sure the sheet is published:\nFile → Share → Publish to web → Entire Document → CSV → Publish');
+  if(!S.names.length)throw new Error('No data found. Make sure the sheet is published: File → Share → Publish to web → Entire Document → CSV → Publish');
+  console.log('Loaded sheets:',S.names);
 }
 
 
