@@ -683,11 +683,22 @@ function launch(src, canRefresh) {
 function rebuildTabs() {
   var html = '';
   for (var i = 0; i < S.names.length; i++) {
-    var n = S.names[i];
     var cls = 'tbtn' + (i === 0 ? ' on' : '');
-    html += '<button class="' + cls + '" onclick="switchTab(' + JSON.stringify(n) + ',this)">' + escH(n) + '</button>';
+    html += '<button class="' + cls + '" data-idx="' + i + '" onclick="clickTab(this)">' + escH(S.names[i]) + '</button>';
   }
   document.getElementById('tbar').innerHTML = html;
+}
+
+function clickTab(btn) {
+  var idx = parseInt(btn.getAttribute('data-idx'), 10);
+  var name = S.names[idx];
+  if (!name) return;
+  killCharts();
+  var btns = document.querySelectorAll('.tbtn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('on');
+  btn.classList.add('on');
+  S.active = name;
+  renderTab(name);
 }
 
 function switchTab(name, btn) {
@@ -744,7 +755,7 @@ function renderTab(name) {
   if (ana.metric.length || ana.category.length) html += '<div class="carea" id="carea"></div>';
 
   html += '<div class="tcard">';
-  html += '<div class="ttbar"><input class="tsrch" placeholder="Search ' + escH(name) + '..." oninput="doSearch(this.value,' + JSON.stringify(name) + ')"><span class="tmeta" id="tmeta"></span></div>';
+  html += '<div class="ttbar"><input class="tsrch" placeholder="Search ' + escH(name) + '..." oninput="doSearch(this.value,S.active)"><span class="tmeta" id="tmeta"></span></div>';
   html += '<div class="twrap" id="twrap"></div>';
   html += '<div class="tfoot"><span id="pginfo"></span><div class="pgrow" id="pgrow"></div></div>';
   html += '</div>';
@@ -1010,9 +1021,14 @@ function buildPager(tab, page, tot) {
   var html = '';
   for (var i = 0; i < ps.length; i++) {
     if (ps[i] === null) html += '<button class="pgb" disabled>...</button>';
-    else html += '<button class="pgb' + (ps[i] === page ? ' on' : '') + '" onclick="goPage(' + ps[i] + ',' + JSON.stringify(tab) + ')">' + ps[i] + '</button>';
+    else html += '<button class="pgb' + (ps[i] === page ? ' on' : '') + '" data-pg="' + ps[i] + '" onclick="goPageClick(this)">' + ps[i] + '</button>';
   }
   w.innerHTML = html;
+}
+
+function goPageClick(btn) {
+  var p = parseInt(btn.getAttribute('data-pg'), 10);
+  goPage(p, S.active);
 }
 
 function goPage(p, tab) {
